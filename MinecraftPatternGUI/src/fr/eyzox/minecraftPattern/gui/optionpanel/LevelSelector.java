@@ -84,4 +84,8 @@ public class LevelSelector extends JPanel {
 		Core.getView().setLevel(Core.getView().getLevel()+1);
 		level.setText(""+Core.getView().getLevel());
 	}
+	
+	public int getLevel() {
+		return Integer.parseInt(level.getText());
+	}
 }
