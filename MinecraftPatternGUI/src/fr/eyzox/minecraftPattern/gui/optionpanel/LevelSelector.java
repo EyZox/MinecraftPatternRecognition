@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
@@ -17,14 +19,19 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
-import fr.eyzox.minecraftPattern.gui.Core;
+import fr.eyzox.minecraftPattern.gui.testbranch.Level;
 
 @SuppressWarnings("serial")
-public class LevelSelector extends JPanel {
+public class LevelSelector extends JPanel implements Observer{
 	private JButton previous, next;
 	private JTextField level;
 	
-	public LevelSelector() throws IOException {
+	private Level levelModel;
+	
+	public LevelSelector(Level l) throws IOException {
+		levelModel = l;
+		levelModel.addObserver(this);
+		
 		previous = new JButton(new ImageIcon(ImageIO.read(getClass().getResource("/data/previous.png"))));
 		next = new JButton(new ImageIcon(ImageIO.read(getClass().getResource("/data/next.png"))));
 		level = new JTextField("0");
@@ -40,7 +47,7 @@ public class LevelSelector extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				previous();
+				levelModel.previous();
 			}
 		});
 		
@@ -48,7 +55,7 @@ public class LevelSelector extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				next();
+				levelModel.next();
 			}
 		});
 		
@@ -57,13 +64,13 @@ public class LevelSelector extends JPanel {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
-					int lvl = Core.getView().getLevel();
+					int lvl = levelModel.getLevel();
 					try {
 						lvl = Integer.parseInt(level.getText());
 					}catch(java.lang.NumberFormatException except) {
 						JOptionPane.showMessageDialog(null,"Invalid Format","Error",JOptionPane.ERROR_MESSAGE);
 					}
-					Core.getView().setLevel(lvl);
+					levelModel.setLevel(lvl);
 				}
 				
 			}
@@ -74,18 +81,9 @@ public class LevelSelector extends JPanel {
 		add(level);
 		add(next);
 	}
-	
-	public void previous() {
-		Core.getView().setLevel(Core.getView().getLevel()-1);
-		level.setText(""+Core.getView().getLevel());
-	}
-	
-	public void next() {
-		Core.getView().setLevel(Core.getView().getLevel()+1);
-		level.setText(""+Core.getView().getLevel());
-	}
-	
-	public int getLevel() {
-		return Integer.parseInt(level.getText());
+
+	@Override
+	public void update(Observable o, Object arg) {
+		level.setText(""+levelModel.getLevel());
 	}
 }

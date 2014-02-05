@@ -3,76 +3,35 @@ package fr.eyzox.minecraftPattern.gui;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
-import java.util.TreeMap;
+import java.util.Observer;
 
+import fr.eyzox.minecraftPattern.gui.action.Action;
+import fr.eyzox.minecraftPattern.gui.optionpanel.BlockInfoModel;
+import fr.eyzox.minecraftPattern.gui.testbranch.Block;
+import fr.eyzox.minecraftPattern.gui.testbranch.Level;
+import fr.eyzox.minecraftPattern.gui.testbranch.View;
 import fr.eyzox.minecraftPattern.pattern.MCPattern;
 import fr.eyzox.minecraftPattern.pattern.MCPatternBlock;
-import fr.eyzox.minecraftPattern.pattern.MCPatternBlock2D;
 
-public class MCPatternModel extends Observable{
+public class MCPatternModel implements Observer{
 	
-	public class coord implements Comparable<coord>{
-		private int x;
-		private int y;
-		
-		public coord(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
+	private BlockBDD pattern;
+	private Level level;
+	private BlockInfoModel blockInfoModel;
+	private View view;
 
-		@Override
-		public int compareTo(coord o) {
-			if(x < o.x) return -1;
-			if(x > o.x) return 1;
-			if(y < o.y) return -1;
-			if(y > o.y) return 1;
-			return 0;
-		}
-	}
-	
-	private Map<Integer, Map<coord,MCPatternBlock2D>> pattern;
 	private boolean saved;
 	private File file;
 	
 	public MCPatternModel() {
-		this.pattern = new TreeMap<Integer, Map<coord,MCPatternBlock2D>>();
-		saved = true;
-	}
-
-	public void fireUpdate() {
-		saved = false;
-		setChanged();
-		notifyObservers();
-	}
-
-	public void add(int level, MCPatternBlock2D block) {
-		Map<coord,MCPatternBlock2D> pattern2D = pattern.get(level);
-		if(pattern2D == null) {
-			pattern2D = new TreeMap<coord,MCPatternBlock2D>();
-			pattern.put(level, pattern2D);
-		}
-		pattern2D.put(new coord(block.getX(), block.getZ()),block);
-		fireUpdate();
-	}
-	
-	public void remove(int level, MCPatternBlock2D block) {
-		Map<coord,MCPatternBlock2D> pattern2D = pattern.get(level);
-		if(pattern2D != null) {
-			pattern2D.remove(block);
-			fireUpdate();
-		}
+		this.pattern = new BlockBDD();
+		this.level = new Level();
+		this.blockInfoModel = new BlockInfoModel();
+		this.view = new View(this);
 		
-	}
-	
-	public void remove(int x, int y, int z) {
-		Map<coord,MCPatternBlock2D> pattern2D = pattern.get(y);
-		if(pattern2D != null) {
-			pattern2D.remove(new coord(x,z));
-		}
-		fireUpdate();
-		
+		this.pattern.addObserver(this);
+		this.blockInfoModel.addObserver(this);
 	}
 	
 	public void importPattern(MCPattern p, boolean forceNew){
@@ -80,41 +39,43 @@ public class MCPatternModel extends Observable{
 			pattern.clear();
 		}
 		for(MCPatternBlock b : p.getPattern()) {
-			if(!pattern.keySet().contains(b.getY())){
-				pattern.put(b.getY(), new TreeMap<coord,MCPatternBlock2D>());
-			}
-			pattern.get(b.getY()).put(new coord(b.getX(),b.getZ()),b);
+			pattern.add(b);
 		}
-		fireUpdate();
 	}
 	
 	public MCPattern export() {
 		List<MCPatternBlock> res = new ArrayList<MCPatternBlock>();
-		for(Integer level : pattern.keySet()) {
-			for(coord c: pattern.get(level).keySet()) {
-				res.add(new MCPatternBlock(pattern.get(level).get(c), level));
+		for(Integer levelY : pattern.getBlockMap().keySet()) {
+			for(Integer levelZ : pattern.getZXMap(levelY).keySet()) {
+				for(Integer levelX : pattern.getXMap(levelY, levelZ).keySet()) {
+					Block b = pattern.getZXMap(levelY).get(levelZ).get(levelX);
+					res.add(new MCPatternBlock(b.getId(), b.getMetaData(), levelX, levelY, levelZ));
+				}
 			}
 		}
 		return new MCPattern(res);
 	}
 	
-	public Map<Integer,Map<coord,MCPatternBlock2D>> getPattern() {
-		return pattern;
-	}
-
-	public void setPattern(Map<Integer, Map<coord,MCPatternBlock2D>> pattern) {
-		this.pattern = pattern;
-		fireUpdate();
-	}
-	
-	public coord getCoord(int x, int y) {
-		return new coord(x, y);
-	}
-	
 	public void clear() {
 		pattern.clear();
-		fireUpdate();
 		saved = true;
+	}
+	
+	public BlockBDD getPattern() {
+		return pattern;
+	}
+	
+	public Level getLevel() {
+		return level;
+	}
+	
+
+	public BlockInfoModel getBlockInfoModel() {
+		return blockInfoModel;
+	}
+	
+	public View getView() {
+		return view;
 	}
 
 	public boolean isSaved() {
@@ -131,5 +92,17 @@ public class MCPatternModel extends Observable{
 
 	public void setFile(File file) {
 		this.file = file;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if(view.getActionModel().getAction() == Action.SELECT && view.getSelectionModel().getSelection() != null) {
+			Block b = pattern.getBlock(view.getSelectionModel().getSelection().x, level.getLevel(), view.getSelectionModel().getSelection().y);
+			if(b == null) return;
+			b.setId(blockInfoModel.getId());
+			b.setMetadata(blockInfoModel.getMetadata());
+		}
+		saved = false;
+		
 	}
 }

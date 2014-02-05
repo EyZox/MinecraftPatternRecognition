@@ -1,49 +1,36 @@
 package fr.eyzox.minecraftPattern.gui.testbranch;
 
-import java.awt.event.MouseAdapter;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 
-public class BlockHandler extends MouseAdapter {
+import fr.eyzox.minecraftPattern.gui.action.Action;
 
-	private View view;
+public class BlockHandler extends ViewEventListener {
 	
 	public BlockHandler(View view) {
-		this.view = view;
+		super(view);
 	}
-	
+
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1) {
-			System.out.println((e.getPoint().x+view.getWindowStart().x)/view.getCellSize());
-			if(view.getWindowStart().x > 0) {
-				System.out.println("Droite");
-			}else System.out.println("Gauche");
+			final Point coord = convert(e.getPoint());
+			if(view.getActionModel().getAction() == Action.SELECT) {
+				Block b = view.getModel().getPattern().getBlock(coord.x, view.getModel().getLevel().getLevel(), coord.y);
+				if(b == null) {
+					view.getModel().getBlockInfoModel().setProperties(-1, -1);
+				}else {
+					view.getModel().getBlockInfoModel().setProperties(b.getId(), b.getMetaData());
+				}
+				view.getSelectionModel().setSelection(coord);
+			}else {
+				view.getModel().getPattern().add(coord.x, 0, coord.y, new Block(view.getModel().getBlockInfoModel().getId(), view.getModel().getBlockInfoModel().getMetadata()));
+			}
+			
+		}else if(e.getButton() == MouseEvent.BUTTON3) {
+			Point coord = convert(e.getPoint());
+			view.getModel().getPattern().remove(coord.x, 0, coord.y);
 		}
 
 	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

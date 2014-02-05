@@ -45,11 +45,6 @@ public class BlockInfos {
 		try {
 			NOT_FOUND = ImageIO.read(BlockInfos.class.getResource("/data/not_found.png"));
 			
-			BlockInfo b = new BlockInfo();
-			b.img = ImageIO.read(BlockInfos.class.getResource("/data/cursor.png"));
-			b.name = CURSOR;
-			map.put(-1, b);
-			
 			File f = new File("BlockID.txt");
 			if(!f.exists()) {
 				BlockIDGenerator.generate();
@@ -61,7 +56,7 @@ public class BlockInfos {
 			while((line = br.readLine()) != null) {
 				Matcher m = p.matcher(line);
 				if(m.matches()) {
-					b = new BlockInfo();
+					BlockInfo b = new BlockInfo();
 					try {
 						b.img = ImageIO.read(new File("textures/blocks/"+m.group("fileName")));
 					} catch (IOException e) {
@@ -73,7 +68,7 @@ public class BlockInfos {
 			}
 			br.close();
 		} catch (IOException e) {
-			new FatalErrorPanel(e, true);
+			FatalError.open(e, true);
 			e.printStackTrace();
 		}
 	}

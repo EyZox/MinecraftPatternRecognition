@@ -2,25 +2,23 @@ package fr.eyzox.minecraftPattern.gui.testbranch;
 
 import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 
-public class MoveHandler extends MouseAdapter {
+public class MoveHandler extends ViewEventListener {
 	private final Cursor defCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
     private final Cursor hndCursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
     
-	private View view;
 	private Point start = new Point();
 	
 	public MoveHandler(View view) {
-		this.view = view;
+		super(view);
 	}
 	
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		if((e.getModifiersEx() & MouseEvent.BUTTON2_DOWN_MASK) == MouseEvent.BUTTON2_DOWN_MASK) {
-			view.getWindowStart().translate(start.x-e.getPoint().x, start.y-e.getPoint().y);
+			view.getWindowStart().translate(start.x-e.getPoint().x, e.getPoint().y-start.y);
 			start.setLocation(e.getPoint());
 			view.repaint();
 		}

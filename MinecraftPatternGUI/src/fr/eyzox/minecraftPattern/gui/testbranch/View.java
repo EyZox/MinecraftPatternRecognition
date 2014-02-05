@@ -1,50 +1,57 @@
 package fr.eyzox.minecraftPattern.gui.testbranch;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 
-import fr.eyzox.minecraftPattern.gui.Core;
+import fr.eyzox.minecraftPattern.gui.BlockInfos;
 import fr.eyzox.minecraftPattern.gui.MCPatternModel;
-import fr.eyzox.minecraftPattern.pattern.MCPatternBlock2D;
+import fr.eyzox.minecraftPattern.gui.action.ActionModel;
+import fr.eyzox.minecraftPattern.gui.selection.SelectionModel;
 
 @SuppressWarnings("serial")
-public class View extends JComponent {
+public class View extends JComponent implements Observer{
 	private boolean added = false;
 
 	private int cellSize;
 	private Point wStart;
+	
+	private SelectionModel selectionModel;
+	private ActionModel actionModel;
 
 	private Color GRID_COLOR = Color.BLACK;
 	private Color AXES_COLOR = Color.BLUE;
+	private boolean SHOW_GRID;
+	private boolean SHOW_AXES;
 
-	public View() {
-		cellSize = 25;
+	private MCPatternModel model;
+
+	public View(MCPatternModel model) {
+		this.model = model;
+		selectionModel = new SelectionModel();
+		actionModel = new ActionModel();
+		cellSize = 35;
 		wStart = new Point();
 		MoveHandler mh = new MoveHandler(this);
 		addMouseListener(mh); addMouseMotionListener(mh);
-		//addMouseListener(new BlockHandler(this));
+		addMouseListener(new BlockHandler(this));
+		addMouseWheelListener(new ZoomHandler(this));
+		
+		model.getPattern().addObserver(this);
+		selectionModel.addObserver(this);
+		model.getLevel().addObserver(this);
+		
 	}
 
 	public void resetPosition() {
-		wStart.setLocation(-getWidth()/2, -getHeight()/2);
+		wStart.setLocation(-getWidth()/2, getHeight()/2);
 
-	}
-
-	public void createFrame() {
-		JFrame f = new JFrame();
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.getContentPane().add(this);
-		this.setPreferredSize(new Dimension(400,300));
-		f.pack();
-		f.setLocationRelativeTo(null);
-		f.setVisible(true);
 	}
 
 	@Override
@@ -59,23 +66,45 @@ public class View extends JComponent {
 		g2d.fillRect(0, 0, getWidth(), getHeight());
 		printGrid(g2d);
 		printAxes(g2d);
-		//printBlocks(g2d);
+		printBlocks(g2d);
 
 	}
 
 	private void printBlocks(Graphics2D g2d) {
-		Map<MCPatternModel.coord, MCPatternBlock2D> m = Core.getModel().getPattern().get(Core.getOptionPanel().getSelectLevel().getLevel());
-		if(m == null) return;
+		int xStart = wStart.x/cellSize - (wStart.x>0?0:1);
+		int zStart = wStart.y/cellSize - (wStart.y>0?0:1);
+
+		int nbLin = getHeight()/cellSize+1;
+		int nbCol = getWidth()/cellSize+1;
+		
+		Map<Integer,Map<Integer,Block>> level = model.getPattern().getZXMap(model.getLevel().getLevel());
+		if(level == null) return;
+		for(int line = 0; line<nbLin; line++) {
+			Map<Integer,Block> blockLine = level.get(zStart-line);
+			if(blockLine != null) {
+				for(int col = 0; col<nbCol; col++) {
+					Block block = blockLine.get(xStart+col);
+					if(block != null) {
+						g2d.drawImage(
+							BlockInfos.getImage(block.getId()),
+							//pos X
+							-wStart.x + (xStart+col)*cellSize,
+							//pos Z
+							wStart.y - (zStart-line+1)*cellSize,
+							cellSize, cellSize, null);
+					}
+				}
+			}
+		}
 
 	}
 
 	private void printAxes(Graphics2D g2d) {
 		g2d.setColor(AXES_COLOR);
-		if(0 >= wStart.x && 0 < getWidth())
+		if(-wStart.x >= 0 && -wStart.x < getWidth())
 			g2d.drawLine(-wStart.x, 0, -wStart.x, getHeight());
-		if(0 >= wStart.y && 0 < getHeight())
-			g2d.drawLine(0, -wStart.y, getWidth(), -wStart.y);
-
+		if(wStart.y >= 0 && wStart.y < getHeight())
+			g2d.drawLine(0, wStart.y, getWidth(), wStart.y);
 	}
 
 	private void printGrid(Graphics2D g2d) {
@@ -105,7 +134,7 @@ public class View extends JComponent {
 			}
 		}
 		//draw horizontal line at top
-		size = -wStart.y;
+		size = wStart.y;
 		if(size > 0) {
 			if(size > getHeight()) size = getHeight() + size%cellSize;
 			nbCase = size/cellSize;
@@ -117,7 +146,7 @@ public class View extends JComponent {
 			}
 		}
 		//draw horizontal line at bottom
-		size = getHeight()+ (wStart.y>0?wStart.y%cellSize:wStart.y);
+		size = getHeight() - (wStart.y<0?wStart.y%cellSize:wStart.y);
 		if(size > 0) {
 			nbCase = size/cellSize;
 			offset = size - nbCase*cellSize;
@@ -147,12 +176,64 @@ public class View extends JComponent {
 		return cellSize;
 	}
 
-	public void setCellSize(int cellSize) {
-		if(cellSize<=0) return;
+	public boolean setCellSize(int cellSize) {
+		if(cellSize<=0) return false;
 		this.cellSize = cellSize;
+		return true;
+	}
+	
+	public MCPatternModel getModel() {
+		return model;
+	}
+	
+	public SelectionModel getSelectionModel() {
+		return selectionModel;
 	}
 
-	public static void main(String[] args) {
-		new View().createFrame();
+	public ActionModel getActionModel() {
+		return actionModel;
 	}
+
+	public void setModel(MCPatternModel model) {
+		this.model = model;
+	}
+
+	public Color getGRID_COLOR() {
+		return GRID_COLOR;
+	}
+
+	public void setGRID_COLOR(Color gRID_COLOR) {
+		GRID_COLOR = gRID_COLOR;
+	}
+
+	public Color getAXES_COLOR() {
+		return AXES_COLOR;
+	}
+
+	public void setAXES_COLOR(Color aXES_COLOR) {
+		AXES_COLOR = aXES_COLOR;
+	}
+
+	public boolean isSHOW_GRID() {
+		return SHOW_GRID;
+	}
+
+	public void setSHOW_GRID(boolean sHOW_GRID) {
+		SHOW_GRID = sHOW_GRID;
+	}
+
+	public boolean isSHOW_AXES() {
+		return SHOW_AXES;
+	}
+
+	public void setSHOW_AXES(boolean sHOW_AXES) {
+		SHOW_AXES = sHOW_AXES;
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		repaint();
+		
+	}
+
 }

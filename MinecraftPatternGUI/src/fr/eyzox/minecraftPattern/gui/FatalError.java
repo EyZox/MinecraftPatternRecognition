@@ -11,10 +11,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-@SuppressWarnings("serial")
-public class FatalErrorPanel extends JFrame {
-	public FatalErrorPanel(Exception e, final boolean mustExit) {
-		super("Fatal Error");
+public class FatalError {
+	
+	public static void open(Exception e, final boolean mustExit) {
+		final JFrame f = new JFrame("Fatal Error");
 		JTextArea area = new JTextArea();
 		area.setEditable(false);
 		area.setText("A fatal error occured, application must shut down.\n"
@@ -29,17 +29,17 @@ public class FatalErrorPanel extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(mustExit)System.exit(1);
-				else dispose();
+				else f.dispose();
 			}
 		});
 		
-		getContentPane().add(new JScrollPane(panel));
-		this.pack();
-		this.setLocationRelativeTo(Core.getCore());
-		this.setAlwaysOnTop(true);
-		this.setVisible(true);
+		f.getContentPane().add(new JScrollPane(panel));
+		f.pack();
+		f.setLocationRelativeTo(Core.getCore());
+		f.setAlwaysOnTop(true);
+		f.setVisible(true);
 		
-		addWindowListener(new WindowAdapter() {
+		f.addWindowListener(new WindowAdapter() {
 			
 			@Override
 			public void windowClosing(WindowEvent arg0) {

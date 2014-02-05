@@ -33,10 +33,10 @@ public class AboutFrame extends JFrame {
 						try {
 							Desktop.getDesktop().browse(new URI(Config.site));
 						} catch (IOException e1) {
-							new FatalErrorPanel(e1, false);
+							FatalError.open(e1, false);
 							e1.printStackTrace();
 						} catch (URISyntaxException e1) {
-							new FatalErrorPanel(e1, false);
+							FatalError.open(e1, false);
 							e1.printStackTrace();
 						}
 					}

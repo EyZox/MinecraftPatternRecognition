@@ -7,13 +7,14 @@ import java.awt.event.WindowEvent;
 import java.util.Properties;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import fr.eyzox.minecraftPattern.gui.action.ActionPanel;
 import fr.eyzox.minecraftPattern.gui.menu.MCPGUIMenuBar;
 import fr.eyzox.minecraftPattern.gui.optionpanel.OptionPanel;
-import fr.eyzox.minecraftPattern.gui.panel.MCPattern2DPanel;
 import fr.eyzox.minecraftPattern.gui.toolbox.MCToolBox;
 
 
@@ -23,7 +24,6 @@ public class Core extends JFrame {
 	public static final String version = " Alpha 0.1";
 	private static MCToolBox toolbox;
 	private static MCPatternModel model;
-	private static MCPattern2DPanel view;
 	private static OptionPanel optionPanel;
 	private static MCPGUIMenuBar menu;
 
@@ -36,21 +36,26 @@ public class Core extends JFrame {
 
 		Config conf = new Config();
 		properties = conf.loadConfig();
-
+		
 		model = new MCPatternModel();
-		toolbox = new MCToolBox();
-		view = new MCPattern2DPanel();
-		optionPanel = new OptionPanel();
-		menu = new MCPGUIMenuBar();
+		toolbox = new MCToolBox(model.getBlockInfoModel(), model.getView().getActionModel());
+		model.getView().getActionModel().setToolbox(toolbox);
+		optionPanel = new OptionPanel(model);
+		menu = new MCPGUIMenuBar(model.getView());
+		
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		JSplitPane splitPaneInfoView = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,view, optionPanel);
+		JSplitPane splitPaneInfoView = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,model.getView(), optionPanel);
 		splitPaneInfoView.setOneTouchExpandable(true);
 		splitPaneInfoView.setContinuousLayout(true);
 
 
-		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,splitPaneInfoView, toolbox);
+		JPanel southPanel = new JPanel(new BorderLayout());
+		southPanel.add(new ActionPanel(model.getView().getActionModel()), BorderLayout.NORTH);
+		southPanel.add(toolbox, BorderLayout.CENTER);
+		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,splitPaneInfoView, southPanel);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setContinuousLayout(true);
 
@@ -84,6 +89,7 @@ public class Core extends JFrame {
 		setVisible(true);
 		
 		core = this;
+		model.setSaved(true);
 		
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -110,10 +116,6 @@ public class Core extends JFrame {
 
 	public static MCPatternModel getModel() {
 		return model;
-	}
-
-	public static MCPattern2DPanel getView() {
-		return view;
 	}
 
 	public static OptionPanel getOptionPanel() {

@@ -12,7 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import fr.eyzox.minecraftPattern.gui.Core;
+import fr.eyzox.minecraftPattern.gui.testbranch.View;
 
 @SuppressWarnings("serial")
 public class ColorFrame extends JFrame {
@@ -22,15 +22,15 @@ public class ColorFrame extends JFrame {
 		AXIS,GRID;
 	}
 	
-	public ColorFrame(final To action) {
+	public ColorFrame(final To action, final View view) {
 		super("Selection de couleurs");
 		/*Ecran de la selection de couleur */
 		switch(action) {
 		case AXIS:
-			chooser = new JColorChooser(Core.getView().getAXES_COLOR());
+			chooser = new JColorChooser(view.getAXES_COLOR());
 			break;
 		case GRID:
-			chooser = new JColorChooser(Core.getView().getGRID_COLOR());
+			chooser = new JColorChooser(view.getGRID_COLOR());
 			break;
 		default:
 			break;
@@ -70,10 +70,10 @@ public class ColorFrame extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				switch(action) {
 				case AXIS:
-					Core.getView().setAXES_COLOR(chooser.getColor());
+					view.setAXES_COLOR(chooser.getColor());
 					break;
 				case GRID:
-					Core.getView().setGRID_COLOR(chooser.getColor());
+					view.setGRID_COLOR(chooser.getColor());
 					break;
 				default:
 					break;

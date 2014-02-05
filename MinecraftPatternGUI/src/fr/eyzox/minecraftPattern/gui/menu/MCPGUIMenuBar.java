@@ -14,6 +14,7 @@ import javax.swing.JOptionPane;
 
 import fr.eyzox.minecraftPattern.gui.AboutFrame;
 import fr.eyzox.minecraftPattern.gui.Core;
+import fr.eyzox.minecraftPattern.gui.testbranch.View;
 import fr.eyzox.minecraftPattern.io.MCPatternWriter;
 import fr.eyzox.minecraftPattern.io.PtrnWriter;
 
@@ -34,7 +35,7 @@ public class MCPGUIMenuBar extends JMenuBar {
 	/*Help*/
 	private JMenuItem about = new JMenuItem("About MinecraftPattern Gui ...");
 
-	public MCPGUIMenuBar() {
+	public MCPGUIMenuBar(final View viewModel) {
 		/* file */
 		file.add(newPattern);
 		file.add(open);
@@ -93,25 +94,33 @@ public class MCPGUIMenuBar extends JMenuBar {
 			}
 		});
 		
-		exit.addActionListener(new ExitHandler());
+		exit.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(!Core.getModel().isSaved() && !Core.getMenu().askForSave()) return;
+				System.exit(0);
+				
+			}
+		});
 		/*view*/
-		showAxes.setSelected(Core.getView().isSHOW_AXES());
+		showAxes.setSelected(viewModel.isSHOW_AXES());
 		showAxes.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Core.getView().setSHOW_AXES(!Core.getView().isSHOW_AXES());
-				showAxes.setSelected(Core.getView().isSHOW_AXES());
+				viewModel.setSHOW_AXES(!viewModel.isSHOW_AXES());
+				showAxes.setSelected(viewModel.isSHOW_AXES());
 			}
 		});
 
-		showGrid.setSelected(Core.getView().isSHOW_GRID());
+		showGrid.setSelected(viewModel.isSHOW_GRID());
 		showGrid.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				Core.getView().setSHOW_GRID(!Core.getView().isSHOW_GRID());
-				showGrid.setSelected(Core.getView().isSHOW_GRID());
+				viewModel.setSHOW_GRID(!viewModel.isSHOW_GRID());
+				showGrid.setSelected(viewModel.isSHOW_GRID());
 			}
 		});
 		
@@ -119,7 +128,7 @@ public class MCPGUIMenuBar extends JMenuBar {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new ColorFrame(ColorFrame.To.AXIS);
+				new ColorFrame(ColorFrame.To.AXIS, viewModel);
 			}
 		});
 		
@@ -127,14 +136,14 @@ public class MCPGUIMenuBar extends JMenuBar {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new ColorFrame(ColorFrame.To.GRID);
+				new ColorFrame(ColorFrame.To.GRID, viewModel);
 			}
 		});
 		
 		previousLevel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Core.getOptionPanel().getSelectLevel().previous();
+				Core.getModel().getLevel().previous();
 			}
 		});
 		
@@ -142,7 +151,7 @@ public class MCPGUIMenuBar extends JMenuBar {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Core.getOptionPanel().getSelectLevel().next();
+				Core.getModel().getLevel().next();
 				
 			}
 		});

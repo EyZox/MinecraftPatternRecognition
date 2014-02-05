@@ -6,25 +6,26 @@ import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import fr.eyzox.minecraftPattern.gui.FatalErrorPanel;
+import fr.eyzox.minecraftPattern.gui.FatalError;
+import fr.eyzox.minecraftPattern.gui.MCPatternModel;
 
 @SuppressWarnings("serial")
 public class OptionPanel extends JPanel {
 	private LevelSelector selectLevel;
 	private BlockInfoPanel blockInfoPanel;
 
-	public OptionPanel() {
+	public OptionPanel(MCPatternModel model) {
 		this.setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 		try {
-			selectLevel = new LevelSelector();
+			selectLevel = new LevelSelector(model.getLevel());
 			selectLevel.setMaximumSize(new Dimension(Integer.MAX_VALUE,selectLevel.getPreferredSize().height));
 			add(selectLevel);
 		} catch (IOException e) {
-			new FatalErrorPanel(e, true);
+			FatalError.open(e, true);
 			e.printStackTrace();
 		}
 		
-		blockInfoPanel = new BlockInfoPanel();
+		blockInfoPanel = new BlockInfoPanel(model.getBlockInfoModel(), model.getView().getActionModel());
 		add(blockInfoPanel);
 	}
 
