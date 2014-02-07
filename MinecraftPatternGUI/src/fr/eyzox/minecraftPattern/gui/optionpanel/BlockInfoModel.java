@@ -6,6 +6,7 @@ public class BlockInfoModel extends Observable {
 	private int id = -1;
 	private int metadata = -1;
 	
+	
 	public int getId() {
 		return id;
 	}
@@ -26,10 +27,6 @@ public class BlockInfoModel extends Observable {
 	public void setProperties(int id, int metadata) {
 		this.id = id;
 		this.metadata = metadata;
-		setChanged();
-		notifyObservers();
-	}
-	public void forceUpdate() {
 		setChanged();
 		notifyObservers();
 	}

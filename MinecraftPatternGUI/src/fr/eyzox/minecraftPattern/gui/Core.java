@@ -38,8 +38,7 @@ public class Core extends JFrame {
 		properties = conf.loadConfig();
 		
 		model = new MCPatternModel();
-		toolbox = new MCToolBox(model.getBlockInfoModel(), model.getView().getActionModel());
-		model.getView().getActionModel().setToolbox(toolbox);
+		toolbox = new MCToolBox(model);
 		optionPanel = new OptionPanel(model);
 		menu = new MCPGUIMenuBar(model.getView());
 		

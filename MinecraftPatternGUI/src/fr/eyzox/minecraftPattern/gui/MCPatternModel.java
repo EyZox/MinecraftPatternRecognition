@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import fr.eyzox.minecraftPattern.gui.action.Action;
 import fr.eyzox.minecraftPattern.gui.optionpanel.BlockInfoModel;
 import fr.eyzox.minecraftPattern.gui.testbranch.Block;
 import fr.eyzox.minecraftPattern.gui.testbranch.Level;
@@ -29,11 +28,11 @@ public class MCPatternModel implements Observer{
 		this.level = new Level();
 		this.blockInfoModel = new BlockInfoModel();
 		this.view = new View(this);
+		view.getActionModel().setBlockInfoModel(blockInfoModel);
 		
 		this.pattern.addObserver(this);
-		this.blockInfoModel.addObserver(this);
 	}
-	
+
 	public void importPattern(MCPattern p, boolean forceNew){
 		if(forceNew) {
 			pattern.clear();
@@ -69,11 +68,6 @@ public class MCPatternModel implements Observer{
 		return level;
 	}
 	
-
-	public BlockInfoModel getBlockInfoModel() {
-		return blockInfoModel;
-	}
-	
 	public View getView() {
 		return view;
 	}
@@ -93,16 +87,13 @@ public class MCPatternModel implements Observer{
 	public void setFile(File file) {
 		this.file = file;
 	}
+	
+	public BlockInfoModel getBlockInfoModel() {
+		return blockInfoModel;
+	}
 
 	@Override
 	public void update(Observable o, Object arg) {
-		if(view.getActionModel().getAction() == Action.SELECT && view.getSelectionModel().getSelection() != null) {
-			Block b = pattern.getBlock(view.getSelectionModel().getSelection().x, level.getLevel(), view.getSelectionModel().getSelection().y);
-			if(b == null) return;
-			b.setId(blockInfoModel.getId());
-			b.setMetadata(blockInfoModel.getMetadata());
-		}
 		saved = false;
-		
 	}
 }

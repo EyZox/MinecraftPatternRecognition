@@ -87,4 +87,8 @@ public class BlockBDD extends Observable{
 		setChanged();
 		notifyObservers();
 	}
+	
+	public void setChanged() {
+		super.setChanged();
+	}
 }

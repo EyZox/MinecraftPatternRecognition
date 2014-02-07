@@ -27,6 +27,11 @@ public class Block implements ComparableBlock {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	public void setProperties(int id, int metadata) {
+		this.id =id;
+		this.metadata = metadata;
+	}
 
 	
 }

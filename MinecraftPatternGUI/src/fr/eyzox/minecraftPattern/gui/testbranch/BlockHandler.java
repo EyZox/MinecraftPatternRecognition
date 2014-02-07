@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.event.MouseEvent;
 
 import fr.eyzox.minecraftPattern.gui.action.Action;
+import fr.eyzox.minecraftPattern.gui.optionpanel.BlockInfoModel;
 
 public class BlockHandler extends ViewEventListener {
 	
@@ -15,21 +16,25 @@ public class BlockHandler extends ViewEventListener {
 	public void mousePressed(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON1) {
 			final Point coord = convert(e.getPoint());
+			
 			if(view.getActionModel().getAction() == Action.SELECT) {
-				Block b = view.getModel().getPattern().getBlock(coord.x, view.getModel().getLevel().getLevel(), coord.y);
-				if(b == null) {
-					view.getModel().getBlockInfoModel().setProperties(-1, -1);
+				final Block selectedBlock = view.getModel().getPattern().getBlock(coord.x, view.getModel().getLevel().getLevel(), coord.y);
+				if(selectedBlock != null) {
+					view.getSelectionModel().setSelection(coord);
+					view.getModel().getBlockInfoModel().setProperties(selectedBlock.getId(), selectedBlock.getMetaData());
 				}else {
-					view.getModel().getBlockInfoModel().setProperties(b.getId(), b.getMetaData());
-				}
-				view.getSelectionModel().setSelection(coord);
+					view.getSelectionModel().setSelection(null);
+					view.getModel().getBlockInfoModel().setProperties(-1,-1);
+				}	
 			}else {
-				view.getModel().getPattern().add(coord.x, 0, coord.y, new Block(view.getModel().getBlockInfoModel().getId(), view.getModel().getBlockInfoModel().getMetadata()));
+				//Action == ADD || REMOVE
+				BlockInfoModel blockInfo = view.getModel().getBlockInfoModel();
+				view.getModel().getPattern().add(coord.x, view.getModel().getLevel().getLevel(), coord.y, new Block(blockInfo.getId(), blockInfo.getMetadata()));
 			}
 			
 		}else if(e.getButton() == MouseEvent.BUTTON3) {
 			Point coord = convert(e.getPoint());
-			view.getModel().getPattern().remove(coord.x, 0, coord.y);
+			view.getModel().getPattern().remove(coord.x, view.getModel().getLevel().getLevel(), coord.y);
 		}
 
 	}

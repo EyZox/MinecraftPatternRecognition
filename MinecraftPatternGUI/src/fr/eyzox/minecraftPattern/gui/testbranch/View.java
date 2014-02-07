@@ -46,7 +46,6 @@ public class View extends JComponent implements Observer{
 		model.getPattern().addObserver(this);
 		selectionModel.addObserver(this);
 		model.getLevel().addObserver(this);
-		
 	}
 
 	public void resetPosition() {
