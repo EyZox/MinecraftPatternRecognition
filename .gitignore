@@ -1,0 +1,7 @@
+.metadata/
+MinecraftPattern/bin/
+MinecraftPattern/.settings/
+MinecraftPatternGUI/bin/
+MinecraftPatternGUI/.settings/
+MinecraftPatternGUI/BlockID.txt
+MinecraftPatternGUI/config.cfg
