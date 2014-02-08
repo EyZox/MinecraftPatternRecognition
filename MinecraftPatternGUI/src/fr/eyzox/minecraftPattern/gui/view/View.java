@@ -33,6 +33,7 @@ public class View extends JComponent implements Observer{
 
 	private Color GRID_COLOR = Color.BLACK;
 	private Color AXES_COLOR = Color.BLUE;
+	private Color SELECTION_COLOR;
 	private boolean SHOW_GRID;
 	private boolean SHOW_AXES;
 
@@ -46,6 +47,8 @@ public class View extends JComponent implements Observer{
 		addMouseListener(mh); addMouseMotionListener(mh);
 		addMouseListener(new BlockHandler(this, models));
 		addMouseWheelListener(new ZoomHandler(this));
+		
+		setSELECTION_COLOR(Color.BLUE);
 		
 		bdd.addObserver(this);
 		selectionModel.addObserver(this);
@@ -70,7 +73,16 @@ public class View extends JComponent implements Observer{
 		printGrid(g2d);
 		printAxes(g2d);
 		printBlocks(g2d);
+		printSelection(g2d);
 
+	}
+
+	private void printSelection(Graphics2D g2d) {
+		Point selectedBlock = selectionModel.getSelection();
+		if(selectedBlock != null) {
+			g2d.setColor(SELECTION_COLOR);
+			g2d.fillRect(-wStart.x+(selectedBlock.x*cellSize), wStart.y-((selectedBlock.y+1)*cellSize), cellSize, cellSize);
+		}
 	}
 
 	private void printBlocks(Graphics2D g2d) {
@@ -201,6 +213,14 @@ public class View extends JComponent implements Observer{
 		AXES_COLOR = aXES_COLOR;
 	}
 
+	public Color getSELECTION_COLOR() {
+		return SELECTION_COLOR;
+	}
+
+	public void setSELECTION_COLOR(Color c) {
+		SELECTION_COLOR = new Color(c.getRed(), c.getGreen(), c.getBlue(), 70);
+	}
+
 	public boolean isSHOW_GRID() {
 		return SHOW_GRID;
 	}
@@ -218,7 +238,10 @@ public class View extends JComponent implements Observer{
 	}
 
 	@Override
-	public void update(Observable arg0, Object arg1) {
+	public void update(Observable obs, Object arg1) {
+		if(obs instanceof SelectionModel) {
+			printSelection((Graphics2D) getGraphics());
+		}
 		repaint();
 		
 	}
