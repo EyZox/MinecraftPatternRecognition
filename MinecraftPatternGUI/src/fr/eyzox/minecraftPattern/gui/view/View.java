@@ -129,7 +129,7 @@ public class View extends JComponent implements Observer{
 		//draw vertical lines at left
 		size = -wStart.x;
 		if(size > 0) {
-			if(size > getWidth()) size = getWidth() + size%cellSize;
+			if(size > getWidth()) size = getWidth() + (size-getWidth())%cellSize;
 			nbCase = size/cellSize;
 			offset = size - nbCase*cellSize;
 			for(int i = 0; i<nbCase; i++) {
@@ -151,7 +151,7 @@ public class View extends JComponent implements Observer{
 		//draw horizontal line at top
 		size = wStart.y;
 		if(size > 0) {
-			if(size > getHeight()) size = getHeight() + size%cellSize;
+			if(size > getHeight()) size = getHeight() + (size-getHeight())%cellSize;
 			nbCase = size/cellSize;
 			offset = size - nbCase*cellSize;
 
