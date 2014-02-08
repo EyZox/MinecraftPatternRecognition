@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui;
+package fr.eyzox.minecraftPattern.gui.config;
 
 import java.awt.Image;
 import java.io.BufferedReader;
@@ -11,6 +11,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
+
+import fr.eyzox.minecraftPattern.gui.customframe.FatalError;
 
 public class BlockInfos {
 	

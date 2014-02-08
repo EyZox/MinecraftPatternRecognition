@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui;
+package fr.eyzox.minecraftPattern.gui.customframe;
 
 
 import java.awt.Cursor;
@@ -14,6 +14,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import fr.eyzox.minecraftPattern.gui.Core;
+import fr.eyzox.minecraftPattern.gui.config.Config;
 
 @SuppressWarnings("serial")
 public class AboutFrame extends JFrame {
@@ -56,7 +59,7 @@ public class AboutFrame extends JFrame {
 
 		getContentPane().add(new JScrollPane(panel));
 		pack();
-		setLocationRelativeTo(Core.getCore());
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 	

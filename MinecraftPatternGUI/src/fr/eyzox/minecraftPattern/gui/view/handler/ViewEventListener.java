@@ -1,7 +1,9 @@
-package fr.eyzox.minecraftPattern.gui.testbranch;
+package fr.eyzox.minecraftPattern.gui.view.handler;
 
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
+
+import fr.eyzox.minecraftPattern.gui.view.View;
 
 public class ViewEventListener extends MouseAdapter {
 	

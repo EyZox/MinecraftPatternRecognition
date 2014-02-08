@@ -1,8 +1,8 @@
-package fr.eyzox.minecraftPattern.gui.testbranch;
+package fr.eyzox.minecraftPattern.gui.level;
 
 import java.util.Observable;
 
-public class Level extends Observable {
+public class LevelModel extends Observable {
 	private int level = 0;
 
 	public int getLevel() {

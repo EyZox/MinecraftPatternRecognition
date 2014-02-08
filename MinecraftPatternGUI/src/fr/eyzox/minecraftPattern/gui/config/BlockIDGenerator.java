@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui;
+package fr.eyzox.minecraftPattern.gui.config;
 
 import java.io.File;
 import java.io.FileWriter;

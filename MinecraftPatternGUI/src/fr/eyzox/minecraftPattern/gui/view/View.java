@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui.testbranch;
+package fr.eyzox.minecraftPattern.gui.view;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -10,10 +10,15 @@ import java.util.Observer;
 
 import javax.swing.JComponent;
 
-import fr.eyzox.minecraftPattern.gui.BlockInfos;
-import fr.eyzox.minecraftPattern.gui.MCPatternModel;
-import fr.eyzox.minecraftPattern.gui.action.ActionModel;
+import fr.eyzox.minecraftPattern.gui.BlockEditionModels;
+import fr.eyzox.minecraftPattern.gui.bdd.Block;
+import fr.eyzox.minecraftPattern.gui.bdd.BlockBDD;
+import fr.eyzox.minecraftPattern.gui.config.BlockInfos;
+import fr.eyzox.minecraftPattern.gui.level.LevelModel;
 import fr.eyzox.minecraftPattern.gui.selection.SelectionModel;
+import fr.eyzox.minecraftPattern.gui.view.handler.BlockHandler;
+import fr.eyzox.minecraftPattern.gui.view.handler.MoveHandler;
+import fr.eyzox.minecraftPattern.gui.view.handler.ZoomHandler;
 
 @SuppressWarnings("serial")
 public class View extends JComponent implements Observer{
@@ -22,30 +27,29 @@ public class View extends JComponent implements Observer{
 	private int cellSize;
 	private Point wStart;
 	
+	private BlockBDD bdd;
+	private LevelModel levelModel;
 	private SelectionModel selectionModel;
-	private ActionModel actionModel;
 
 	private Color GRID_COLOR = Color.BLACK;
 	private Color AXES_COLOR = Color.BLUE;
 	private boolean SHOW_GRID;
 	private boolean SHOW_AXES;
 
-	private MCPatternModel model;
-
-	public View(MCPatternModel model) {
-		this.model = model;
-		selectionModel = new SelectionModel();
-		actionModel = new ActionModel();
+	public View(BlockEditionModels models) {
+		this.bdd = models.getBdd();
+		this.levelModel = models.getLevelModel();
+		this.selectionModel = models.getSelectionModel();
 		cellSize = 35;
 		wStart = new Point();
 		MoveHandler mh = new MoveHandler(this);
 		addMouseListener(mh); addMouseMotionListener(mh);
-		addMouseListener(new BlockHandler(this));
+		addMouseListener(new BlockHandler(this, models));
 		addMouseWheelListener(new ZoomHandler(this));
 		
-		model.getPattern().addObserver(this);
+		bdd.addObserver(this);
 		selectionModel.addObserver(this);
-		model.getLevel().addObserver(this);
+		levelModel.addObserver(this);
 	}
 
 	public void resetPosition() {
@@ -76,7 +80,7 @@ public class View extends JComponent implements Observer{
 		int nbLin = getHeight()/cellSize+1;
 		int nbCol = getWidth()/cellSize+1;
 		
-		Map<Integer,Map<Integer,Block>> level = model.getPattern().getZXMap(model.getLevel().getLevel());
+		Map<Integer,Map<Integer,Block>> level = bdd.getZXMap(levelModel.getLevel());
 		if(level == null) return;
 		for(int line = 0; line<nbLin; line++) {
 			Map<Integer,Block> blockLine = level.get(zStart-line);
@@ -179,22 +183,6 @@ public class View extends JComponent implements Observer{
 		if(cellSize<=0) return false;
 		this.cellSize = cellSize;
 		return true;
-	}
-	
-	public MCPatternModel getModel() {
-		return model;
-	}
-	
-	public SelectionModel getSelectionModel() {
-		return selectionModel;
-	}
-
-	public ActionModel getActionModel() {
-		return actionModel;
-	}
-
-	public void setModel(MCPatternModel model) {
-		this.model = model;
 	}
 
 	public Color getGRID_COLOR() {

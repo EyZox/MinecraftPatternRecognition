@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui.optionpanel;
+package fr.eyzox.minecraftPattern.gui.level;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -19,16 +19,14 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
-import fr.eyzox.minecraftPattern.gui.testbranch.Level;
-
 @SuppressWarnings("serial")
-public class LevelSelector extends JPanel implements Observer{
+public class LevelPanel extends JPanel implements Observer{
 	private JButton previous, next;
 	private JTextField level;
 	
-	private Level levelModel;
+	private LevelModel levelModel;
 	
-	public LevelSelector(Level l) throws IOException {
+	public LevelPanel(LevelModel l) throws IOException {
 		levelModel = l;
 		levelModel.addObserver(this);
 		

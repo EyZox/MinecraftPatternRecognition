@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui.optionpanel;
+package fr.eyzox.minecraftPattern.gui.blockinfo;
 
 import java.util.Observable;
 

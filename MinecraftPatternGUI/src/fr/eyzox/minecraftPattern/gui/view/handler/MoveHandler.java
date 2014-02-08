@@ -1,8 +1,10 @@
-package fr.eyzox.minecraftPattern.gui.testbranch;
+package fr.eyzox.minecraftPattern.gui.view.handler;
 
 import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+
+import fr.eyzox.minecraftPattern.gui.view.View;
 
 
 public class MoveHandler extends ViewEventListener {

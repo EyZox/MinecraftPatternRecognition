@@ -12,15 +12,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import fr.eyzox.minecraftPattern.gui.testbranch.View;
+import fr.eyzox.minecraftPattern.gui.menu.jmenu.ViewMenu.To;
+import fr.eyzox.minecraftPattern.gui.view.View;
 
 @SuppressWarnings("serial")
 public class ColorFrame extends JFrame {
 	private JColorChooser chooser;
-	
-	public enum To {
-		AXIS,GRID;
-	}
 	
 	public ColorFrame(final To action, final View view) {
 		super("Selection de couleurs");

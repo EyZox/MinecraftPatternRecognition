@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui.menu;
+package fr.eyzox.minecraftPattern.gui.customframe;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -19,17 +19,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import fr.eyzox.minecraftPattern.gui.Config;
 import fr.eyzox.minecraftPattern.gui.Core;
+import fr.eyzox.minecraftPattern.gui.config.Config;
 
 @SuppressWarnings("serial")
-public class StartingOptionFrame extends JFrame {
+public class PreferencesFrame extends JFrame {
 	
 	private Map<String, JTextField> valueMap = new TreeMap<String, JTextField>();
 	private JButton ok, cancel;
 	private Config conf = new Config();
 	
-	public StartingOptionFrame() {
+	public PreferencesFrame() {
 		super("Config");
 		final Properties p = Core.getProperties();
 		
@@ -78,7 +78,7 @@ public class StartingOptionFrame extends JFrame {
 		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 		setMinimumSize(new Dimension(300,0));
 		pack();
-		setLocationRelativeTo(Core.getCore());
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 }

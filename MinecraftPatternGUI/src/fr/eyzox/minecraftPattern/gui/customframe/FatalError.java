@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui;
+package fr.eyzox.minecraftPattern.gui.customframe;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
 
 public class FatalError {
 	
@@ -35,7 +36,7 @@ public class FatalError {
 		
 		f.getContentPane().add(new JScrollPane(panel));
 		f.pack();
-		f.setLocationRelativeTo(Core.getCore());
+		f.setLocationRelativeTo(null);
 		f.setAlwaysOnTop(true);
 		f.setVisible(true);
 		

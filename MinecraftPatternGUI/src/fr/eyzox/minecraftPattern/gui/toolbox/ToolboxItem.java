@@ -10,16 +10,16 @@ import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import fr.eyzox.minecraftPattern.gui.BlockInfos;
+import fr.eyzox.minecraftPattern.gui.config.BlockInfos;
 
 @SuppressWarnings("serial")
-public class MCToolBoxItem extends JRadioButton{
+public class ToolboxItem extends JRadioButton{
 	
 	private int id;
 	private final static Border selectedBorder = BorderFactory.createLoweredBevelBorder();
 	public final static int preferredSize = 32;
 	
-	public MCToolBoxItem(int id) {
+	public ToolboxItem(int id) {
 		super();
 		this.setId(id);
 		setPreferredSize(new Dimension(preferredSize,preferredSize));
@@ -29,7 +29,7 @@ public class MCToolBoxItem extends JRadioButton{
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				setBorderPainted(MCToolBoxItem.this.isSelected());
+				setBorderPainted(ToolboxItem.this.isSelected());
 			}
 		});
 		

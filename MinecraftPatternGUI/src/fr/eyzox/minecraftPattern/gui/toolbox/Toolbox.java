@@ -16,25 +16,23 @@ import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import fr.eyzox.minecraftPattern.gui.BlockInfos;
-import fr.eyzox.minecraftPattern.gui.MCPatternModel;
+import fr.eyzox.minecraftPattern.gui.BlockEditionModels;
 import fr.eyzox.minecraftPattern.gui.action.Action;
+import fr.eyzox.minecraftPattern.gui.config.BlockInfos;
 
 @SuppressWarnings("serial")
-public class MCToolBox extends JPanel {
+public class Toolbox extends JPanel {
 
 	private JScrollPane scrollPanel;
 	private JPanel panel;
 	private int scrollbarSize;
 	private ButtonGroup group;
-	private List<MCToolBoxItem> items = new ArrayList<MCToolBoxItem>();
-	private MCToolBoxItem selectedItem;
+	private List<ToolboxItem> items = new ArrayList<ToolboxItem>();
+	private ToolboxItem selectedItem;
 
-	private MCPatternModel model;
 
-	public MCToolBox(MCPatternModel model) {
-		this.model = model;
-		this.model.getView().getActionModel().setToolbox(this);
+	public Toolbox(final BlockEditionModels models) {
+		models.getActionModel().setToolbox(this);
 		this.setLayout(new GridLayout(1,0));
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
@@ -53,7 +51,7 @@ public class MCToolBox extends JPanel {
 
 		group = new ButtonGroup();
 		for(Integer id : BlockInfos.get().keySet()){
-			final MCToolBoxItem item = new MCToolBoxItem(id);
+			final ToolboxItem item = new ToolboxItem(id);
 			group.add(item);
 			items.add(item);
 			item.addItemListener(new ItemListener() {
@@ -62,13 +60,13 @@ public class MCToolBox extends JPanel {
 				public void itemStateChanged(ItemEvent arg0) {
 					if(item.isSelected()) {
 						selectedItem = item;
-						MCToolBox.this.model.getBlockInfoModel().setId(item.getId());
-						if(MCToolBox.this.model.getView().getActionModel().getAction() == Action.SELECT) {
-							Point selection = MCToolBox.this.model.getView().getSelectionModel().getSelection();
+						models.getBlockInfoModel().setId(item.getId());
+						if(models.getActionModel().getAction() == Action.SELECT) {
+							Point selection = models.getSelectionModel().getSelection();
 							if( selection != null) {
-								MCToolBox.this.model.getPattern().getBlock(selection.x, MCToolBox.this.model.getLevel().getLevel(), selection.y).setId(item.getId());
-								MCToolBox.this.model.getPattern().setChanged();
-								MCToolBox.this.model.getPattern().notifyObservers();
+								models.getBdd().getBlock(selection.x, models.getLevelModel().getLevel(), selection.y).setId(item.getId());
+								models.getBdd().setChanged();
+								models.getBdd().notifyObservers();
 							}
 						}
 					}
@@ -82,13 +80,13 @@ public class MCToolBox extends JPanel {
 	public void refreshItems() {
 		panel.removeAll();
 		final int VGAP = 5;
-		int availableLine = (scrollPanel.getViewport().getSize().height)/(MCToolBoxItem.preferredSize+(VGAP*2))         ;
+		int availableLine = (scrollPanel.getViewport().getSize().height)/(ToolboxItem.preferredSize+(VGAP*2))         ;
 		if(availableLine <= 0 ) availableLine = 1;
 		int nbItemPerLine = BlockInfos.get().size()/availableLine;
 
 		int i = 0;
 		JPanel subPanel = null;
-		for(final MCToolBoxItem item : items){
+		for(final ToolboxItem item : items){
 			if(i == 0) {
 				subPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 				panel.add(subPanel);
@@ -100,7 +98,7 @@ public class MCToolBox extends JPanel {
 
 	}
 	
-	public MCToolBoxItem getSelectedItem() {
+	public ToolboxItem getSelectedItem() {
 		return selectedItem;
 	}
 }

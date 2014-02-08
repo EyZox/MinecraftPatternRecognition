@@ -1,10 +1,9 @@
-package fr.eyzox.minecraftPattern.gui;
+package fr.eyzox.minecraftPattern.gui.bdd;
 
 import java.util.Map;
 import java.util.Observable;
 import java.util.TreeMap;
 
-import fr.eyzox.minecraftPattern.gui.testbranch.Block;
 import fr.eyzox.minecraftPattern.pattern.MCPatternBlock;
 
 public class BlockBDD extends Observable{

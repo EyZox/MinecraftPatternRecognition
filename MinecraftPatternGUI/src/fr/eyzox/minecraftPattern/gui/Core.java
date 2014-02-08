@@ -4,65 +4,98 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.util.Properties;
 
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import fr.eyzox.minecraftPattern.gui.action.ActionPanel;
-import fr.eyzox.minecraftPattern.gui.menu.MCPGUIMenuBar;
-import fr.eyzox.minecraftPattern.gui.optionpanel.OptionPanel;
-import fr.eyzox.minecraftPattern.gui.toolbox.MCToolBox;
+import fr.eyzox.minecraftPattern.gui.blockinfo.BlockInfoPanel;
+import fr.eyzox.minecraftPattern.gui.config.Config;
+import fr.eyzox.minecraftPattern.gui.level.LevelPanel;
+import fr.eyzox.minecraftPattern.gui.menu.MenuBar;
+import fr.eyzox.minecraftPattern.gui.toolbox.Toolbox;
+import fr.eyzox.minecraftPattern.gui.view.View;
 
 
 @SuppressWarnings("serial")
 public class Core extends JFrame {
 
 	public static final String version = " Alpha 0.1";
-	private static MCToolBox toolbox;
-	private static MCPatternModel model;
-	private static OptionPanel optionPanel;
-	private static MCPGUIMenuBar menu;
-
 	private static Properties properties;
-	
-	private static Core core;
 
 	public Core() {
 		super("Minecraft Pattern GUI");
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+		/***************************************************************/
+		/*                      LOAD CONFIG                            */
+		/***************************************************************/
 
 		Config conf = new Config();
 		properties = conf.loadConfig();
-		
-		model = new MCPatternModel();
-		toolbox = new MCToolBox(model);
-		optionPanel = new OptionPanel(model);
-		menu = new MCPGUIMenuBar(model.getView());
-		
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		JSplitPane splitPaneInfoView = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,model.getView(), optionPanel);
+		/***************************************************************/
+		/*                CREATE MODELS AND COMPONENTS                 */
+		/***************************************************************/
+
+		BlockEditionModels models = new BlockEditionModels();
+
+		final PatternModel patternModel = new PatternModel(models.getBdd());
+		Toolbox toolbox = new Toolbox(models);
+		View view = new View(models);
+		LevelPanel levelPanel = null;
+		try {
+			levelPanel = new LevelPanel(models.getLevelModel());
+		} catch (IOException e) {
+			System.err.println("Unable to create the LevelPanel");
+			e.printStackTrace();
+		}
+		BlockInfoPanel blockInfoPanel = new BlockInfoPanel(models);
+		ActionPanel actionPanel = new ActionPanel(models.getActionModel());
+
+		MenuBar menuBar = new MenuBar(view, models.getLevelModel()); 
+
+		/***************************************************************/
+		/*                    PREPARE COMPONENTS                       */
+		/***************************************************************/
+
+		JPanel rightPanel = new JPanel();
+		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+		if(levelPanel != null) rightPanel.add(levelPanel);
+		rightPanel.add(blockInfoPanel);
+
+		JPanel southPanel = new JPanel(new BorderLayout());
+		southPanel.add(actionPanel, BorderLayout.NORTH);
+		southPanel.add(toolbox, BorderLayout.CENTER);
+
+		/****************************************************************/
+		/*                        PLACE COMPONENTS                      */
+		/****************************************************************/
+
+
+		JSplitPane splitPaneInfoView = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,view, new JScrollPane(rightPanel));
 		splitPaneInfoView.setOneTouchExpandable(true);
 		splitPaneInfoView.setContinuousLayout(true);
 
-
-		JPanel southPanel = new JPanel(new BorderLayout());
-		southPanel.add(new ActionPanel(model.getView().getActionModel()), BorderLayout.NORTH);
-		southPanel.add(toolbox, BorderLayout.CENTER);
-		
 		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,splitPaneInfoView, southPanel);
 		splitPane.setOneTouchExpandable(true);
 		splitPane.setContinuousLayout(true);
 
-
-		getContentPane().setLayout(new BorderLayout());
 		getContentPane().add(splitPane, BorderLayout.CENTER);
 
-		setJMenuBar(menu);
+		setJMenuBar(menuBar);
+
+		/****************************************************************/
+		/*                           SET SIZE                           */
+		/****************************************************************/
 
 		// Set the size of app
 		int width = Integer.parseInt(conf.getDefaultValue("resolution-x"));
@@ -84,21 +117,21 @@ public class Core extends JFrame {
 		pack();
 		splitPaneInfoView.setDividerLocation(0.75);
 		splitPane.setDividerLocation(0.75);
-		setLocationRelativeTo(null);
-		setVisible(true);
-		
-		core = this;
-		model.setSaved(true);
-		
+
+
+		/*-------------------------------------------------------------------------*/
+
 		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent arg0) {
-				if(!Core.getModel().isSaved()) Core.getMenu().askForSave();
+			public void windowClosing(WindowEvent e) {
+				if(patternModel.close()) System.exit(0);
 			}
 		});
+
+		patternModel.setSaved(true);
+
+		setLocationRelativeTo(null);
+		setVisible(true);
 	}
-
-
 
 	public static void main(String[] agrs) {
 		try {
@@ -109,29 +142,8 @@ public class Core extends JFrame {
 		new Core();
 	}
 
-	public static MCToolBox getToolbox() {
-		return toolbox;
-	}
-
-	public static MCPatternModel getModel() {
-		return model;
-	}
-
-	public static OptionPanel getOptionPanel() {
-		return optionPanel;
-	}
-
-	public static MCPGUIMenuBar getMenu() {
-		return menu;
-	}
 
 	public static Properties getProperties() {
 		return properties;
-	}
-
-
-
-	public static Core getCore() {
-		return core;
 	}
 }

@@ -1,10 +1,11 @@
-package fr.eyzox.minecraftPattern.gui.optionpanel;
+package fr.eyzox.minecraftPattern.gui.blockinfo;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
@@ -21,55 +22,47 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import fr.eyzox.minecraftPattern.gui.BlockInfos;
-import fr.eyzox.minecraftPattern.gui.Core;
+import fr.eyzox.minecraftPattern.gui.BlockEditionModels;
 import fr.eyzox.minecraftPattern.gui.action.Action;
-import fr.eyzox.minecraftPattern.gui.action.ActionModel;
-import fr.eyzox.minecraftPattern.gui.toolbox.MCToolBoxItem;
+import fr.eyzox.minecraftPattern.gui.config.BlockInfos;
+import fr.eyzox.minecraftPattern.gui.toolbox.ToolboxItem;
 
 @SuppressWarnings("serial")
 public class BlockInfoPanel extends JPanel implements Observer{
 
-	private JTextField id = new JTextField(), value;
+	private JTextField id = new JTextField(), value = new JTextField();
 	private JLabel name = new JLabel();
 	private JCheckBox ignoreValue = new JCheckBox("Ignore value");
 	private JPanel preview;
-	
+
 	private boolean frameOpenned = false;
 	
-	private BlockInfoModel blockInforModel;
-	private ActionModel actionModel;
-	
-	public BlockInfoPanel(BlockInfoModel bm, ActionModel am) {
-		this.blockInforModel = bm;
-		this.actionModel = am;
-		blockInforModel.addObserver(this);
+	private BlockEditionModels models;
+
+	public BlockInfoPanel(BlockEditionModels m) {
+		this.models = m;
+		models.getBlockInfoModel().addObserver(this);
+		
 		setBorder(new TitledBorder("Block information"));
+		
 		// Declaration des composants
 		preview = new JPanel() {
 			{
-				setPreferredSize(new Dimension(MCToolBoxItem.preferredSize*2+100, MCToolBoxItem.preferredSize*2+100));
+				setPreferredSize(new Dimension(ToolboxItem.preferredSize*2+100, ToolboxItem.preferredSize*2+100));
 
 			}
 			@Override
 			public void paint(Graphics g) {
 				super.paint(g);
 				Graphics2D g2d = (Graphics2D) g;
-				if(blockInforModel.getId() >= 0)
-					g2d.drawImage(BlockInfos.getImage(blockInforModel.getId()), 50, 50, getWidth()-100, getHeight()-100, null);
+				if(models.getBlockInfoModel().getId() >= 0)
+					g2d.drawImage(BlockInfos.getImage(models.getBlockInfoModel().getId()), 50, 50, getWidth()-100, getHeight()-100, null);
 
 			}
 		};
 
 		JLabel lbName = new JLabel("Name : "), lbID = new JLabel("Id : "), lbValue = new JLabel("Value : ");
 
-		value = new JTextField() {
-			@Override
-			public void setEnabled(boolean b) {
-				super.setEnabled(b);
-			}
-		};
-		
 		//Placement des composants
 		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
@@ -106,7 +99,7 @@ public class BlockInfoPanel extends JPanel implements Observer{
 			public void keyPressed(KeyEvent e) {
 				if(frameOpenned) return;
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					blockInforModel.setMetadata(convertMetaData());
+					updateMetaData();
 				}
 
 			}
@@ -117,7 +110,7 @@ public class BlockInfoPanel extends JPanel implements Observer{
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				if(frameOpenned) return;
-				blockInforModel.setMetadata(convertMetaData());
+				updateMetaData();
 
 			}
 		});
@@ -128,7 +121,7 @@ public class BlockInfoPanel extends JPanel implements Observer{
 			public void keyPressed(KeyEvent e) {
 				if(frameOpenned) return;
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-					blockInforModel.setId(convertID());
+					updateID();
 				}
 
 			}
@@ -139,33 +132,19 @@ public class BlockInfoPanel extends JPanel implements Observer{
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				if(frameOpenned) return;
-				blockInforModel.setId(convertID());
+				updateID();
 
 			}
 		});
 	}
 
-	private int convertMetaData() {
+	private int convert(String str) {
 		try {
-			return Integer.parseInt(value.getText());
+			return Integer.parseInt(str);
 		}catch(java.lang.NumberFormatException e) {
 			frameOpenned = true;
-			JOptionPane.showMessageDialog(Core.getCore(),
-					"Value must be an whole number",
-					"Parse error",
-					JOptionPane.ERROR_MESSAGE);
-			frameOpenned = false;
-			return -1;
-		}
-	}
-	
-	private int convertID() {
-		try {
-			return Integer.parseInt(id.getText());
-		}catch(java.lang.NumberFormatException ex) {
-			frameOpenned = true;
-			JOptionPane.showMessageDialog(Core.getCore(),
-					"ID must be a whole number",
+			JOptionPane.showMessageDialog(this,
+					"This value must be an whole number",
 					"Parse error",
 					JOptionPane.ERROR_MESSAGE);
 			frameOpenned = false;
@@ -173,28 +152,54 @@ public class BlockInfoPanel extends JPanel implements Observer{
 		}
 	}
 
+	private void updateID() {
+		int id = convert(this.id.getText());
+		models.getBlockInfoModel().setId(id);
+		if(id >= 0 && models.getActionModel().getAction() == Action.SELECT ) {
+			Point selection = models.getSelectionModel().getSelection();
+			if(selection != null) {
+				models.getBdd().getBlock(selection.x, models.getLevelModel().getLevel(), selection.y).setId(id);
+				models.getBdd().setChanged();
+				models.getBdd().notifyObservers();
+			}
+		}
+	}
+
+	private void updateMetaData() {
+		int metadata = convert(this.value.getText());
+		models.getBlockInfoModel().setMetadata(metadata);
+		if(models.getActionModel().getAction() == Action.SELECT ) {
+			Point selection = models.getSelectionModel().getSelection();
+			if(selection != null) {
+				models.getBdd().getBlock(selection.x, models.getLevelModel().getLevel(), selection.y).setMetadata(metadata);
+				models.getBdd().setChanged();
+				models.getBdd().notifyObservers();
+			}
+		}
+	}
+
 	@Override
 	public void update(Observable o, Object arg) {
-		if(blockInforModel.getId() < 0) {
+		if(models.getBlockInfoModel().getId() < 0) {
 			id.setText("");
 			name.setText("????");
 			id.setEnabled(false);
 			ignoreValue.setEnabled(false);
 			value.setEnabled(false);
 		}else {
-			id.setText(""+blockInforModel.getId());
-			name.setText(BlockInfos.getNameOf(blockInforModel.getId()));
+			id.setText(""+models.getBlockInfoModel().getId());
+			name.setText(BlockInfos.getNameOf(models.getBlockInfoModel().getId()));
 			ignoreValue.setEnabled(true);
-			if(blockInforModel.getMetadata() >= 0 ) {
+			if(models.getBlockInfoModel().getMetadata() >= 0 ) {
 				ignoreValue.setSelected(false);
-				value.setText(""+blockInforModel.getMetadata());
+				value.setText(""+models.getBlockInfoModel().getMetadata());
 			}else {
 				value.setText("");
 				ignoreValue.setSelected(true);
 			}
-			id.setEnabled(actionModel.getAction() == Action.SELECT);
+			id.setEnabled(models.getActionModel().getAction() == Action.SELECT);
 		}
-		
+
 		preview.repaint();
 	}
 }
