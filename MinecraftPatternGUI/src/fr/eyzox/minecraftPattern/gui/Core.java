@@ -61,7 +61,7 @@ public class Core extends JFrame {
 		BlockInfoPanel blockInfoPanel = new BlockInfoPanel(models);
 		ActionPanel actionPanel = new ActionPanel(models.getActionModel());
 
-		MenuBar menuBar = new MenuBar(view, models.getLevelModel()); 
+		MenuBar menuBar = new MenuBar(patternModel, view, models.getLevelModel()); 
 
 		/***************************************************************/
 		/*                    PREPARE COMPONENTS                       */

@@ -15,7 +15,7 @@ public class FileMenu extends JMenu {
 	private PatternModel patternModel;
 	private JMenuItem open, saveAs, save, exit, newPattern, option;
 	
-	public FileMenu() {
+	public FileMenu(PatternModel patternModel) {
 		super("File");
 		open = new JMenuItem("Open ...");
 		saveAs = new JMenuItem("Save as ...");
@@ -23,6 +23,8 @@ public class FileMenu extends JMenu {
 		exit = new JMenuItem("Exit");
 		newPattern = new JMenuItem("New");
 		option = new JMenuItem("Preference");
+		
+		this.patternModel = patternModel;
 		
 		addMenuItems();
 		addListeners();

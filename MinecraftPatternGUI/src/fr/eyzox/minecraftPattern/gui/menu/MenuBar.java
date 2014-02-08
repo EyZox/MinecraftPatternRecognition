@@ -3,6 +3,7 @@ package fr.eyzox.minecraftPattern.gui.menu;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 
+import fr.eyzox.minecraftPattern.gui.PatternModel;
 import fr.eyzox.minecraftPattern.gui.level.LevelModel;
 import fr.eyzox.minecraftPattern.gui.menu.jmenu.AboutMenu;
 import fr.eyzox.minecraftPattern.gui.menu.jmenu.FileMenu;
@@ -14,8 +15,8 @@ public class MenuBar extends JMenuBar {
 	
 	private JMenu file, view, about;
 
-	public MenuBar(View viewModel, LevelModel levelModel) {
-		file = new FileMenu();
+	public MenuBar(PatternModel patternModel, View viewModel, LevelModel levelModel) {
+		file = new FileMenu(patternModel);
 		view = new ViewMenu(viewModel, levelModel);
 		about = new AboutMenu();
 		

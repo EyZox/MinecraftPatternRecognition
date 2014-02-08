@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 public class Config {
-	private static final File config = new File("config.properties");
+	private static final File config = new File("config.cfg");
 
 	public final static String site = "https://github.com/EyZox/MinecraftPatternGUI";
 	
