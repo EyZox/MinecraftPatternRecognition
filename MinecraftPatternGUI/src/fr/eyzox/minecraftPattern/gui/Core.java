@@ -4,10 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.util.Properties;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -51,13 +49,7 @@ public class Core extends JFrame {
 		final PatternModel patternModel = new PatternModel(models.getBdd());
 		Toolbox toolbox = new Toolbox(models);
 		View view = new View(models);
-		LevelPanel levelPanel = null;
-		try {
-			levelPanel = new LevelPanel(models.getLevelModel());
-		} catch (IOException e) {
-			System.err.println("Unable to create the LevelPanel");
-			e.printStackTrace();
-		}
+		LevelPanel levelPanel = new LevelPanel(models.getLevelModel());
 		BlockInfoPanel blockInfoPanel = new BlockInfoPanel(models);
 		ActionPanel actionPanel = new ActionPanel(models.getActionModel());
 
@@ -67,10 +59,9 @@ public class Core extends JFrame {
 		/*                    PREPARE COMPONENTS                       */
 		/***************************************************************/
 
-		JPanel rightPanel = new JPanel();
-		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
-		if(levelPanel != null) rightPanel.add(levelPanel);
-		rightPanel.add(blockInfoPanel);
+		JPanel rightPanel = new JPanel(new BorderLayout());
+		rightPanel.add(levelPanel,BorderLayout.NORTH);
+		rightPanel.add(blockInfoPanel, BorderLayout.CENTER);
 
 		JPanel southPanel = new JPanel(new BorderLayout());
 		southPanel.add(actionPanel, BorderLayout.NORTH);

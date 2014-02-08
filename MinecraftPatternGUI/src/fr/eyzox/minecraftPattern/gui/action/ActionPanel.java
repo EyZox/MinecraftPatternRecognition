@@ -39,7 +39,7 @@ public class ActionPanel extends JPanel implements Observer{
 		this.model = m;
 		this.model.addObserver(this);
 		actionMap = new TreeMap<Action, JActionRadioButton>();
-		this.setLayout(new FlowLayout());
+		this.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
 		for(Action a : Action.values()) {
 			actionMap.put(a, new JActionRadioButton(a));

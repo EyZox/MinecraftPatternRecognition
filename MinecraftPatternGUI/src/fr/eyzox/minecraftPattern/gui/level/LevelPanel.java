@@ -1,6 +1,7 @@
 package fr.eyzox.minecraftPattern.gui.level;
 
-import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -10,7 +11,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.imageio.ImageIO;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -26,14 +26,13 @@ public class LevelPanel extends JPanel implements Observer{
 	
 	private LevelModel levelModel;
 	
-	public LevelPanel(LevelModel l) throws IOException {
+	public LevelPanel(LevelModel l) {
 		levelModel = l;
 		levelModel.addObserver(this);
 		
-		previous = new JButton(new ImageIcon(ImageIO.read(getClass().getResource("/data/previous.png"))));
-		next = new JButton(new ImageIcon(ImageIO.read(getClass().getResource("/data/next.png"))));
+		previous = new JButton("/data/previous.png");
+		next = new JButton("/data/next.png");
 		level = new JTextField("0");
-		level.setPreferredSize(new Dimension(64, level.getPreferredSize().height));
 		level.setHorizontalAlignment(SwingConstants.CENTER);
 		previous.setBorder(null);next.setBorder(null);
 		previous.setContentAreaFilled(false);next.setContentAreaFilled(false);
@@ -74,10 +73,29 @@ public class LevelPanel extends JPanel implements Observer{
 			}
 		});
 		
-		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-		add(previous);
-		add(level);
-		add(next);
+		setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+		c.gridx = 0; c.gridy = 0; c.fill = GridBagConstraints.HORIZONTAL;
+		add(previous,c);
+		c.gridx = 2;
+		add(next,c);
+		c.gridx = 1; c.weightx = 1;
+		add(level,c);
+		
+		setIcons(next);
+		setIcons(previous);
+		
+	}
+
+	private void setIcons(JButton b) {
+		try {
+			b.setIcon(new ImageIcon(ImageIO.read(getClass().getResource(b.getText()))));
+			b.setText("");
+		} catch (IOException e) {
+			System.err.println("Unable to load "+b.getText());
+			e.printStackTrace();
+		}
+		
 	}
 
 	@Override
