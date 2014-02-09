@@ -5,9 +5,9 @@ import javax.swing.JMenuBar;
 
 import fr.eyzox.minecraftPattern.gui.PatternModel;
 import fr.eyzox.minecraftPattern.gui.level.LevelModel;
-import fr.eyzox.minecraftPattern.gui.menu.jmenu.AboutMenu;
-import fr.eyzox.minecraftPattern.gui.menu.jmenu.FileMenu;
-import fr.eyzox.minecraftPattern.gui.menu.jmenu.ViewMenu;
+import fr.eyzox.minecraftPattern.gui.menu.jmenu.about.AboutMenu;
+import fr.eyzox.minecraftPattern.gui.menu.jmenu.file.FileMenu;
+import fr.eyzox.minecraftPattern.gui.menu.jmenu.view.ViewMenu;
 import fr.eyzox.minecraftPattern.gui.view.View;
 
 @SuppressWarnings("serial")

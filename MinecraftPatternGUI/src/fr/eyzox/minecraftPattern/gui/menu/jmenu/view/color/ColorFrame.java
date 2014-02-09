@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui.menu;
+package fr.eyzox.minecraftPattern.gui.menu.jmenu.view.color;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -12,27 +12,15 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
-import fr.eyzox.minecraftPattern.gui.menu.jmenu.ViewMenu.To;
-import fr.eyzox.minecraftPattern.gui.view.View;
-
 @SuppressWarnings("serial")
 public class ColorFrame extends JFrame {
 	private JColorChooser chooser;
 	
-	public ColorFrame(final To action, final View view) {
+	public ColorFrame(final IColorAction colorAction) {
 		super("Selection de couleurs");
 		/*Ecran de la selection de couleur */
-		switch(action) {
-		case AXIS:
-			chooser = new JColorChooser(view.getAXES_COLOR());
-			break;
-		case GRID:
-			chooser = new JColorChooser(view.getGRID_COLOR());
-			break;
-		default:
-			break;
 		
-		}
+		chooser = new JColorChooser(colorAction.getColor());
 		chooser.getPreviewPanel().getParent().setVisible(false);
 		chooser.setBorder(new TitledBorder("Couleur du trait"));
 
@@ -65,17 +53,7 @@ public class ColorFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				switch(action) {
-				case AXIS:
-					view.setAXES_COLOR(chooser.getColor());
-					break;
-				case GRID:
-					view.setGRID_COLOR(chooser.getColor());
-					break;
-				default:
-					break;
-				
-				}
+				colorAction.setColor(chooser.getColor());
 				dispose();
 			}
 

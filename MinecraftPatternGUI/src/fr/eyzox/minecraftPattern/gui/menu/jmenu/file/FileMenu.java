@@ -1,4 +1,4 @@
-package fr.eyzox.minecraftPattern.gui.menu.jmenu;
+package fr.eyzox.minecraftPattern.gui.menu.jmenu.file;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
