@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 import fr.eyzox.minecraftPattern.gui.level.LevelModel;
 import fr.eyzox.minecraftPattern.gui.menu.jmenu.view.color.ColorSubMenu;
@@ -33,6 +34,7 @@ public class ViewMenu extends JMenu {
 
 		addMenuItems();
 		addListeners();
+		addAccelerators();
 	}
 
 	public void addMenuItems() {
@@ -50,6 +52,11 @@ public class ViewMenu extends JMenu {
 		showGrid.addActionListener(new ShowGridHandler());
 		nextLevel.addActionListener(new NextLevelHandler());
 		previousLevel.addActionListener(new PreviousLevelHandler());
+	}
+	
+	private void addAccelerators() {
+		nextLevel.setAccelerator(KeyStroke.getKeyStroke('+'));
+		previousLevel.setAccelerator(KeyStroke.getKeyStroke('-'));
 	}
 
 	private class ShowAxesHandler implements ActionListener{

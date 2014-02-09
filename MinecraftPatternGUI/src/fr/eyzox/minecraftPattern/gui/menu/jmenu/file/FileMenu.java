@@ -2,9 +2,11 @@ package fr.eyzox.minecraftPattern.gui.menu.jmenu.file;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 
 import fr.eyzox.minecraftPattern.gui.PatternModel;
 import fr.eyzox.minecraftPattern.gui.customframe.PreferencesFrame;
@@ -28,7 +30,7 @@ public class FileMenu extends JMenu {
 		
 		addMenuItems();
 		addListeners();
-		
+		addAccelerators();
 	}
 	
 	private void addMenuItems() {
@@ -49,6 +51,13 @@ public class FileMenu extends JMenu {
 		exit.addActionListener(new ExitHandler());
 		newPattern.addActionListener(new NewPatternHandler());
 		option.addActionListener(new PreferencesHandler());
+	}
+	
+	private void addAccelerators() {
+		newPattern.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+		open.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+		saveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK));
+		save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 	}
 	
 	private class OpenHandler implements ActionListener {
