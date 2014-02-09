@@ -91,19 +91,6 @@ public class SelectionHandler extends ViewEventListener {
 				}
 
 			}
-			if(models.getSelectionModel().getSelection().size() > 1) {
-				models.getBlockInfoModel().setMulti(true);
-				models.getBlockInfoModel().setProperties(-2, -1);
-			}else {
-				models.getBlockInfoModel().setMulti(false);
-				if(models.getSelectionModel().getSelection().size() < 1) {
-					models.getBlockInfoModel().setProperties(-1, -1);
-				}else{
-					Point coordBlock = models.getSelectionModel().getSelection().iterator().next();
-					Block b = models.getBdd().getBlock(coordBlock.x, models.getLevelModel().getLevel(), coordBlock.y);
-					models.getBlockInfoModel().setProperties(b.getId(), b.getMetaData());
-				}
-			}
 		}else {
 			if(MASK == MouseEvent.BUTTON1_DOWN_MASK && models.getBdd().getBlock(coord.x, models.getLevelModel().getLevel(), coord.y) != null) {
 				models.getSelectionModel().add(coord);
@@ -111,8 +98,19 @@ public class SelectionHandler extends ViewEventListener {
 				models.getSelectionModel().remove(coord);
 			}
 		}
-
-
+		if(models.getSelectionModel().getSelection().size() > 1) {
+			models.getBlockInfoModel().setMulti(true);
+			models.getBlockInfoModel().setProperties(-2, -1);
+		}else {
+			models.getBlockInfoModel().setMulti(false);
+			if(models.getSelectionModel().getSelection().size() < 1) {
+				models.getBlockInfoModel().setProperties(-1, -1);
+			}else{
+				Point coordBlock = models.getSelectionModel().getSelection().iterator().next();
+				Block b = models.getBdd().getBlock(coordBlock.x, models.getLevelModel().getLevel(), coordBlock.y);
+				models.getBlockInfoModel().setProperties(b.getId(), b.getMetaData());
+			}
+		}
 		models.getSelectionModel().fireUpdate();
 	}
 
