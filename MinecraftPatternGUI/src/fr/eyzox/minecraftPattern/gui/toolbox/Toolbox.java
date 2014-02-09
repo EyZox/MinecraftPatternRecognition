@@ -65,8 +65,7 @@ public class Toolbox extends JPanel {
 							for(Point selection : models.getSelectionModel().getSelection()) {
 								models.getBdd().getBlock(selection.x, models.getLevelModel().getLevel(), selection.y).setId(item.getId());
 							}
-							models.getBdd().setChanged();
-							models.getBdd().notifyObservers();
+							models.getBdd().fireUpdate();
 						}
 					}
 				}

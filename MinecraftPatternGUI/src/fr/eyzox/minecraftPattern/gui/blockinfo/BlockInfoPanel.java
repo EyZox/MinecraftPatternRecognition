@@ -160,8 +160,7 @@ public class BlockInfoPanel extends JPanel implements Observer{
 			for(Point selection : models.getSelectionModel().getSelection()) {
 				models.getBdd().getBlock(selection.x, models.getLevelModel().getLevel(), selection.y).setId(id);
 			}
-			models.getBdd().setChanged();
-			models.getBdd().notifyObservers();
+			models.getBdd().fireUpdate();
 		}
 	}
 
@@ -172,8 +171,7 @@ public class BlockInfoPanel extends JPanel implements Observer{
 			for(Point selection : models.getSelectionModel().getSelection()) {
 				models.getBdd().getBlock(selection.x, models.getLevelModel().getLevel(), selection.y).setMetadata(metadata);
 			}
-			models.getBdd().setChanged();
-			models.getBdd().notifyObservers();
+			models.getBdd().fireUpdate();
 		}
 	}
 

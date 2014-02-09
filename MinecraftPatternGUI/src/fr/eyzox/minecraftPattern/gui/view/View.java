@@ -12,11 +12,9 @@ import java.util.Observer;
 import javax.swing.JComponent;
 
 import fr.eyzox.minecraftPattern.gui.BlockEditionModels;
+import fr.eyzox.minecraftPattern.gui.action.Action;
 import fr.eyzox.minecraftPattern.gui.bdd.Block;
-import fr.eyzox.minecraftPattern.gui.bdd.BlockBDD;
 import fr.eyzox.minecraftPattern.gui.config.BlockInfos;
-import fr.eyzox.minecraftPattern.gui.level.LevelModel;
-import fr.eyzox.minecraftPattern.gui.selection.SelectionModel;
 import fr.eyzox.minecraftPattern.gui.view.handler.SelectionHandler;
 import fr.eyzox.minecraftPattern.gui.view.handler.BlockHandler;
 import fr.eyzox.minecraftPattern.gui.view.handler.MoveHandler;
@@ -29,9 +27,7 @@ public class View extends JComponent implements Observer{
 	private int cellSize;
 	private Point wStart;
 	
-	private BlockBDD bdd;
-	private LevelModel levelModel;
-	private SelectionModel selectionModel;
+	private BlockEditionModels models;
 	
 	private Rectangle selection;
 
@@ -42,9 +38,7 @@ public class View extends JComponent implements Observer{
 	private boolean SHOW_AXES = true;
 
 	public View(BlockEditionModels models) {
-		this.bdd = models.getBdd();
-		this.levelModel = models.getLevelModel();
-		this.selectionModel = models.getSelectionModel();
+		this.models = models;
 		cellSize = 35;
 		wStart = new Point();
 		MoveHandler mh = new MoveHandler(this);
@@ -59,9 +53,9 @@ public class View extends JComponent implements Observer{
 		
 		setSELECTION_COLOR(Color.BLUE);
 		
-		bdd.addObserver(this);
-		selectionModel.addObserver(this);
-		levelModel.addObserver(this);
+		models.getBdd().addObserver(this);
+		models.getSelectionModel().addObserver(this);
+		models.getLevelModel().addObserver(this);
 	}
 
 	public void resetPosition() {
@@ -89,14 +83,17 @@ public class View extends JComponent implements Observer{
 
 	private void printPreSelection(Graphics2D g2d) {
 		if(selection != null) {
-			g2d.fill(selection);
+			if(models.getActionModel().getAction() == Action.SELECT) g2d.fill(selection);
+			else {
+				g2d.drawImage(BlockInfos.getImage(models.getBlockInfoModel().getId()), selection.getLocation().x, selection.getLocation().y, selection.getSize().width, selection.getSize().height, null);
+			}
 		}
 		
 	}
 
 	private void printSelection(Graphics2D g2d) {
 		g2d.setColor(SELECTION_COLOR);
-		for(Point selectedBlock : selectionModel.getSelection()) {
+		for(Point selectedBlock : models.getSelectionModel().getSelection()) {
 			g2d.fillRect(-wStart.x+(selectedBlock.x*cellSize), wStart.y-((selectedBlock.y+1)*cellSize), cellSize, cellSize);
 		}
 	}
@@ -108,7 +105,7 @@ public class View extends JComponent implements Observer{
 		int nbLin = getHeight()/cellSize+1;
 		int nbCol = getWidth()/cellSize+1;
 		
-		Map<Integer,Map<Integer,Block>> level = bdd.getZXMap(levelModel.getLevel());
+		Map<Integer,Map<Integer,Block>> level = models.getBdd().getZXMap(models.getLevelModel().getLevel());
 		if(level == null) return;
 		for(int line = 0; line<nbLin; line++) {
 			Map<Integer,Block> blockLine = level.get(zStart-line);

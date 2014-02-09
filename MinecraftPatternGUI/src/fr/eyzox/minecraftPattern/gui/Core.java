@@ -25,7 +25,7 @@ import fr.eyzox.minecraftPattern.gui.view.View;
 @SuppressWarnings("serial")
 public class Core extends JFrame {
 
-	public static final String version = " Alpha 0.1";
+	public static final String version = "1.1";
 	private static Properties properties;
 
 	public Core() {

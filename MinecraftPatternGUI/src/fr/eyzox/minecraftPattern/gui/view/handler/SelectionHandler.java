@@ -1,7 +1,6 @@
 package fr.eyzox.minecraftPattern.gui.view.handler;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.Map;
 
@@ -10,54 +9,33 @@ import fr.eyzox.minecraftPattern.gui.action.Action;
 import fr.eyzox.minecraftPattern.gui.bdd.Block;
 import fr.eyzox.minecraftPattern.gui.view.View;
 
-public class SelectionHandler extends ViewEventListener {
+public class SelectionHandler extends CanDrawRectangleOverlay {
 
 	protected BlockEditionModels models;
-
-	private int MASK;
-	private Rectangle rect;
-	private Point start,stop, pressed;
 
 	public SelectionHandler(View view, BlockEditionModels models) {
 		super(view);
 		this.models = models;
-		rect = new Rectangle();
-		start = new Point();
-		stop = new Point();
-		pressed = new Point();
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if(models.getActionModel().getAction() != Action.SELECT || MASK == MouseEvent.NOBUTTON) return;
-		start.setLocation(Math.min(pressed.x, e.getPoint().x), Math.min(pressed.y, e.getPoint().y));
-		stop.setLocation(Math.max(pressed.x, e.getPoint().x), Math.max(pressed.y, e.getPoint().y));
-		rect.setLocation(start);
-		rect.setSize(stop.x-start.x, stop.y-start.y);
-		view.setSelection(rect);
+		if(models.getActionModel().getAction() != Action.SELECT) return;
+		super.mouseDragged(e);
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		if(models.getActionModel().getAction() != Action.SELECT) return;
-		pressed.setLocation(e.getPoint());
-		if(e.getButton() == MouseEvent.BUTTON3){
-			MASK = MouseEvent.BUTTON3_DOWN_MASK;
-			return;
-		}
-		if(e.getButton() == MouseEvent.BUTTON1) {
-			if(!e.isControlDown()) models.getSelectionModel().clear();
-			MASK = MouseEvent.BUTTON1_DOWN_MASK;
-		}else {
-			MASK = MouseEvent.NOBUTTON;
-		}
+		super.mousePressed(e);
+		if(!e.isControlDown() && MASK == MouseEvent.BUTTON1_DOWN_MASK) models.getSelectionModel().clear();
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if(models.getActionModel().getAction() != Action.SELECT) return;
-		view.setSelection(null);
-
+		super.mouseReleased(e);
+		
 		Point coord = convert(e.getPoint());
 		Point pressedCoord = convert(pressed);
 		if(coord.x != pressedCoord.x || coord.y != pressedCoord.y) {
