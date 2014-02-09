@@ -18,7 +18,7 @@ import fr.eyzox.minecraftPattern.gui.config.BlockInfos;
 import fr.eyzox.minecraftPattern.gui.level.LevelModel;
 import fr.eyzox.minecraftPattern.gui.selection.SelectionModel;
 import fr.eyzox.minecraftPattern.gui.view.handler.SelectionHandler;
-import fr.eyzox.minecraftPattern.gui.view.handler.SimpleBlockHandler;
+import fr.eyzox.minecraftPattern.gui.view.handler.BlockHandler;
 import fr.eyzox.minecraftPattern.gui.view.handler.MoveHandler;
 import fr.eyzox.minecraftPattern.gui.view.handler.ZoomHandler;
 
@@ -54,7 +54,8 @@ public class View extends JComponent implements Observer{
 		SelectionHandler sh = new SelectionHandler(this, models);
 		addMouseListener(sh); addMouseMotionListener(sh);
 		
-		addMouseListener(new SimpleBlockHandler(this, models));
+		BlockHandler bh = new BlockHandler(this, models);
+		addMouseListener(bh); addMouseMotionListener(bh);
 		
 		setSELECTION_COLOR(Color.BLUE);
 		
