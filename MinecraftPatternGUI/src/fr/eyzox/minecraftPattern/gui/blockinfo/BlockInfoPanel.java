@@ -36,15 +36,15 @@ public class BlockInfoPanel extends JPanel implements Observer{
 	private JPanel preview;
 
 	private boolean frameOpenned = false;
-	
+
 	private BlockEditionModels models;
 
 	public BlockInfoPanel(BlockEditionModels m) {
 		this.models = m;
 		models.getBlockInfoModel().addObserver(this);
-		
+
 		setBorder(new TitledBorder("Block information"));
-		
+
 		// Declaration des composants
 		preview = new JPanel() {
 			{
@@ -55,9 +55,10 @@ public class BlockInfoPanel extends JPanel implements Observer{
 			public void paint(Graphics g) {
 				super.paint(g);
 				Graphics2D g2d = (Graphics2D) g;
-				if(models.getBlockInfoModel().getId() >= 0)
+				if(models.getBlockInfoModel().getId() == -2) {
+					g2d.drawImage(BlockInfos.getMULTI(), 50, 50, getWidth()-100, getHeight()-100, null);
+				}else if(models.getBlockInfoModel().getId() >= 0)
 					g2d.drawImage(BlockInfos.getImage(models.getBlockInfoModel().getId()), 50, 50, getWidth()-100, getHeight()-100, null);
-
 			}
 		};
 
@@ -156,12 +157,11 @@ public class BlockInfoPanel extends JPanel implements Observer{
 		int id = convert(this.id.getText());
 		models.getBlockInfoModel().setId(id);
 		if(id >= 0 && models.getActionModel().getAction() == Action.SELECT ) {
-			Point selection = models.getSelectionModel().getSelection();
-			if(selection != null) {
+			for(Point selection : models.getSelectionModel().getSelection()) {
 				models.getBdd().getBlock(selection.x, models.getLevelModel().getLevel(), selection.y).setId(id);
-				models.getBdd().setChanged();
-				models.getBdd().notifyObservers();
 			}
+			models.getBdd().setChanged();
+			models.getBdd().notifyObservers();
 		}
 	}
 
@@ -169,12 +169,11 @@ public class BlockInfoPanel extends JPanel implements Observer{
 		int metadata = convert(this.value.getText());
 		models.getBlockInfoModel().setMetadata(metadata);
 		if(models.getActionModel().getAction() == Action.SELECT ) {
-			Point selection = models.getSelectionModel().getSelection();
-			if(selection != null) {
+			for(Point selection : models.getSelectionModel().getSelection()) {
 				models.getBdd().getBlock(selection.x, models.getLevelModel().getLevel(), selection.y).setMetadata(metadata);
-				models.getBdd().setChanged();
-				models.getBdd().notifyObservers();
 			}
+			models.getBdd().setChanged();
+			models.getBdd().notifyObservers();
 		}
 	}
 
@@ -182,10 +181,20 @@ public class BlockInfoPanel extends JPanel implements Observer{
 	public void update(Observable o, Object arg) {
 		if(models.getBlockInfoModel().getId() < 0) {
 			id.setText("");
-			name.setText("????");
-			id.setEnabled(false);
-			ignoreValue.setEnabled(false);
-			value.setEnabled(false);
+			if(models.getBlockInfoModel().getId() == -2) {
+				name.setText("multi-selection");
+				id.setEnabled(true);
+				ignoreValue.setEnabled(true);
+				if(models.getBlockInfoModel().getMetadata() >= 0) {
+					value.setText(""+models.getBlockInfoModel().getMetadata());
+					ignoreValue.setSelected(false);
+				}else ignoreValue.setSelected(true);
+			}else {
+				name.setText("????");
+				id.setEnabled(false);
+				ignoreValue.setEnabled(false);
+				value.setEnabled(false);
+			}
 		}else {
 			id.setText(""+models.getBlockInfoModel().getId());
 			name.setText(BlockInfos.getNameOf(models.getBlockInfoModel().getId()));

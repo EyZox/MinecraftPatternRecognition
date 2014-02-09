@@ -5,6 +5,7 @@ import java.util.Observable;
 public class BlockInfoModel extends Observable {
 	private int id = -1;
 	private int metadata = -1;
+	private boolean multi = false;
 	
 	
 	public int getId() {
@@ -29,6 +30,12 @@ public class BlockInfoModel extends Observable {
 		this.metadata = metadata;
 		setChanged();
 		notifyObservers();
+	}
+	public boolean isMulti() {
+		return multi;
+	}
+	public void setMulti(boolean multi) {
+		this.multi = multi;
 	}
 	
 }

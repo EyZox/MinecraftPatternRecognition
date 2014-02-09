@@ -18,7 +18,7 @@ public class BlockEditionModels {
 		selectionModel = new SelectionModel();
 		blockInfoModel = new BlockInfoModel();
 		levelModel = new LevelModel();
-		actionModel = new ActionModel(blockInfoModel);
+		actionModel = new ActionModel(blockInfoModel, selectionModel);
 	}
 
 	public BlockBDD getBdd() {

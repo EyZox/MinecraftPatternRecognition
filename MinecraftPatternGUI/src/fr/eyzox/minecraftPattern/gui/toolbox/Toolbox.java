@@ -62,12 +62,11 @@ public class Toolbox extends JPanel {
 						selectedItem = item;
 						models.getBlockInfoModel().setId(item.getId());
 						if(models.getActionModel().getAction() == Action.SELECT) {
-							Point selection = models.getSelectionModel().getSelection();
-							if( selection != null) {
+							for(Point selection : models.getSelectionModel().getSelection()) {
 								models.getBdd().getBlock(selection.x, models.getLevelModel().getLevel(), selection.y).setId(item.getId());
-								models.getBdd().setChanged();
-								models.getBdd().notifyObservers();
 							}
+							models.getBdd().setChanged();
+							models.getBdd().notifyObservers();
 						}
 					}
 				}
@@ -97,7 +96,7 @@ public class Toolbox extends JPanel {
 		}
 
 	}
-	
+
 	public ToolboxItem getSelectedItem() {
 		return selectedItem;
 	}

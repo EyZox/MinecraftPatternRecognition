@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -16,7 +17,8 @@ import fr.eyzox.minecraftPattern.gui.bdd.BlockBDD;
 import fr.eyzox.minecraftPattern.gui.config.BlockInfos;
 import fr.eyzox.minecraftPattern.gui.level.LevelModel;
 import fr.eyzox.minecraftPattern.gui.selection.SelectionModel;
-import fr.eyzox.minecraftPattern.gui.view.handler.BlockHandler;
+import fr.eyzox.minecraftPattern.gui.view.handler.SelectionHandler;
+import fr.eyzox.minecraftPattern.gui.view.handler.SimpleBlockHandler;
 import fr.eyzox.minecraftPattern.gui.view.handler.MoveHandler;
 import fr.eyzox.minecraftPattern.gui.view.handler.ZoomHandler;
 
@@ -30,12 +32,14 @@ public class View extends JComponent implements Observer{
 	private BlockBDD bdd;
 	private LevelModel levelModel;
 	private SelectionModel selectionModel;
+	
+	private Rectangle selection;
 
 	private Color GRID_COLOR = Color.BLACK;
 	private Color AXES_COLOR = Color.BLUE;
 	private Color SELECTION_COLOR;
-	private boolean SHOW_GRID;
-	private boolean SHOW_AXES;
+	private boolean SHOW_GRID = true;
+	private boolean SHOW_AXES = true;
 
 	public View(BlockEditionModels models) {
 		this.bdd = models.getBdd();
@@ -45,8 +49,12 @@ public class View extends JComponent implements Observer{
 		wStart = new Point();
 		MoveHandler mh = new MoveHandler(this);
 		addMouseListener(mh); addMouseMotionListener(mh);
-		addMouseListener(new BlockHandler(this, models));
 		addMouseWheelListener(new ZoomHandler(this));
+		
+		SelectionHandler sh = new SelectionHandler(this, models);
+		addMouseListener(sh); addMouseMotionListener(sh);
+		
+		addMouseListener(new SimpleBlockHandler(this, models));
 		
 		setSELECTION_COLOR(Color.BLUE);
 		
@@ -70,17 +78,24 @@ public class View extends JComponent implements Observer{
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setColor(Color.WHITE);
 		g2d.fillRect(0, 0, getWidth(), getHeight());
-		printGrid(g2d);
-		printAxes(g2d);
 		printBlocks(g2d);
+		if(SHOW_GRID) printGrid(g2d);
+		if(SHOW_AXES) printAxes(g2d);
 		printSelection(g2d);
+		printPreSelection(g2d);
 
 	}
 
+	private void printPreSelection(Graphics2D g2d) {
+		if(selection != null) {
+			g2d.fill(selection);
+		}
+		
+	}
+
 	private void printSelection(Graphics2D g2d) {
-		Point selectedBlock = selectionModel.getSelection();
-		if(selectedBlock != null) {
-			g2d.setColor(SELECTION_COLOR);
+		g2d.setColor(SELECTION_COLOR);
+		for(Point selectedBlock : selectionModel.getSelection()) {
 			g2d.fillRect(-wStart.x+(selectedBlock.x*cellSize), wStart.y-((selectedBlock.y+1)*cellSize), cellSize, cellSize);
 		}
 	}
@@ -197,6 +212,15 @@ public class View extends JComponent implements Observer{
 		return true;
 	}
 
+	public Rectangle getSelection() {
+		return selection;
+	}
+
+	public void setSelection(Rectangle selection) {
+		this.selection = selection;
+		repaint();
+	}
+
 	public Color getGRID_COLOR() {
 		return GRID_COLOR;
 	}
@@ -239,11 +263,7 @@ public class View extends JComponent implements Observer{
 
 	@Override
 	public void update(Observable obs, Object arg1) {
-		if(obs instanceof SelectionModel) {
-			printSelection((Graphics2D) getGraphics());
-		}
 		repaint();
-		
 	}
 
 }

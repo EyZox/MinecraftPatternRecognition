@@ -23,6 +23,7 @@ public class BlockInfos {
 	
 	private static Map<Integer, BlockInfo> map;
 	private static Image NOT_FOUND;
+	private static Image MULTI;
 	public static final String CURSOR = "APP_CURSOR";  
 	
 	public static Map<Integer, BlockInfo> get() {
@@ -40,6 +41,20 @@ public class BlockInfos {
 		if(map == null) init();
 		if(map.get(id) == null) return "NOT FOUND";
 		return map.get(id).name;
+	}
+	
+	public static Image getMULTI() {
+		if(NOT_FOUND == null) init();
+		if(MULTI == null) {
+			try {
+				MULTI = ImageIO.read(BlockInfos.class.getResource("/data/multi.png"));
+			} catch (IOException e) {
+				System.err.println("Unable to load /data/multi.png");
+				e.printStackTrace();
+				return NOT_FOUND;
+			}
+		}
+		return MULTI;
 	}
 
 	private static void init() {
