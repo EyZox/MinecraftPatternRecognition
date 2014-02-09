@@ -148,7 +148,7 @@ public class View extends JComponent implements Observer{
 			if(size > getWidth()) size = getWidth() + (size-getWidth())%cellSize;
 			nbCase = size/cellSize;
 			offset = size - nbCase*cellSize;
-			for(int i = 0; i<nbCase; i++) {
+			for(int i = 0; i<=nbCase; i++) {
 				int pos = offset+i*cellSize;
 				g2d.drawLine(pos, 0, pos, getHeight());
 			}
@@ -171,7 +171,7 @@ public class View extends JComponent implements Observer{
 			nbCase = size/cellSize;
 			offset = size - nbCase*cellSize;
 
-			for(int i = 0; i<nbCase; i++) {
+			for(int i = 0; i<=nbCase; i++) {
 				int pos = offset+i*cellSize;
 				g2d.drawLine(0, pos, getWidth(), pos);
 			}
@@ -228,6 +228,7 @@ public class View extends JComponent implements Observer{
 
 	public void setGRID_COLOR(Color gRID_COLOR) {
 		GRID_COLOR = gRID_COLOR;
+		repaint();
 	}
 
 	public Color getAXES_COLOR() {
@@ -236,6 +237,7 @@ public class View extends JComponent implements Observer{
 
 	public void setAXES_COLOR(Color aXES_COLOR) {
 		AXES_COLOR = aXES_COLOR;
+		repaint();
 	}
 
 	public Color getSELECTION_COLOR() {
@@ -244,6 +246,7 @@ public class View extends JComponent implements Observer{
 
 	public void setSELECTION_COLOR(Color c) {
 		SELECTION_COLOR = new Color(c.getRed(), c.getGreen(), c.getBlue(), 70);
+		repaint();
 	}
 
 	public boolean isSHOW_GRID() {
@@ -252,6 +255,7 @@ public class View extends JComponent implements Observer{
 
 	public void setSHOW_GRID(boolean sHOW_GRID) {
 		SHOW_GRID = sHOW_GRID;
+		repaint();
 	}
 
 	public boolean isSHOW_AXES() {
@@ -260,6 +264,7 @@ public class View extends JComponent implements Observer{
 
 	public void setSHOW_AXES(boolean sHOW_AXES) {
 		SHOW_AXES = sHOW_AXES;
+		repaint();
 	}
 
 	@Override

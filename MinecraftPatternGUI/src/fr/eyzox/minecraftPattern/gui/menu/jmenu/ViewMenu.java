@@ -3,6 +3,7 @@ package fr.eyzox.minecraftPattern.gui.menu.jmenu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -19,8 +20,8 @@ public class ViewMenu extends JMenu {
 	
 	public ViewMenu(View view, LevelModel levelModel) {
 		super("View");
-		showGrid = new JMenuItem("Show Grid");
-		showAxes = new JMenuItem("Show Axes");
+		showGrid = new JCheckBoxMenuItem("Show Grid");
+		showAxes = new JCheckBoxMenuItem("Show Axes");
 		axisColor = new JMenuItem("Axis color");
 		gridColor = new JMenuItem("Grid color");
 		previousLevel = new JMenuItem("Previous level");
